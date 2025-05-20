@@ -531,14 +531,15 @@ const file_v1_auth_proto_rawDesc = "" +
 	"\x0fGetUserResponse\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1a\n" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email2\xf2\x03\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email2\x92\x03\n" +
 	"\vAuthService\x12a\n" +
 	"\bRegister\x12\x18.auth_v1.RegisterRequest\x1a\x19.auth_v1.RegisterResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/register\x12U\n" +
-	"\x05Login\x12\x15.auth_v1.LoginRequest\x1a\x16.auth_v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12d\n" +
+	"\x05Login\x12\x15.auth_v1.LoginRequest\x1a\x16.auth_v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12r\n" +
+	"\x12RefreshAccessToken\x12\x1c.auth_v1.RefreshTokenRequest\x1a\x1d.auth_v1.RefreshTokenResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/auth/refresh\x12U\n" +
+	"\aGetUser\x12\x17.auth_v1.GetUserRequest\x1a\x18.auth_v1.GetUserResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/auth/me2u\n" +
+	"\rAccessService\x12d\n" +
 	"\n" +
-	"CheckToken\x12\x1a.auth_v1.CheckTokenRequest\x1a\x1b.auth_v1.CheckTokenResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/check\x12l\n" +
-	"\fRefreshToken\x12\x1c.auth_v1.RefreshTokenRequest\x1a\x1d.auth_v1.RefreshTokenResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/auth/refresh\x12U\n" +
-	"\aGetUser\x12\x17.auth_v1.GetUserRequest\x1a\x18.auth_v1.GetUserResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/auth/meB\x1dZ\x1bnota/pkg/pb/auth/v1;auth_v1b\x06proto3"
+	"CheckToken\x12\x1a.auth_v1.CheckTokenRequest\x1a\x1b.auth_v1.CheckTokenResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/checkB\x1dZ\x1bnota/pkg/pb/auth/v1;auth_v1b\x06proto3"
 
 var (
 	file_v1_auth_proto_rawDescOnce sync.Once
@@ -568,14 +569,14 @@ var file_v1_auth_proto_goTypes = []any{
 var file_v1_auth_proto_depIdxs = []int32{
 	0, // 0: auth_v1.AuthService.Register:input_type -> auth_v1.RegisterRequest
 	2, // 1: auth_v1.AuthService.Login:input_type -> auth_v1.LoginRequest
-	4, // 2: auth_v1.AuthService.CheckToken:input_type -> auth_v1.CheckTokenRequest
-	6, // 3: auth_v1.AuthService.RefreshToken:input_type -> auth_v1.RefreshTokenRequest
-	8, // 4: auth_v1.AuthService.GetUser:input_type -> auth_v1.GetUserRequest
+	6, // 2: auth_v1.AuthService.RefreshAccessToken:input_type -> auth_v1.RefreshTokenRequest
+	8, // 3: auth_v1.AuthService.GetUser:input_type -> auth_v1.GetUserRequest
+	4, // 4: auth_v1.AccessService.CheckToken:input_type -> auth_v1.CheckTokenRequest
 	1, // 5: auth_v1.AuthService.Register:output_type -> auth_v1.RegisterResponse
 	3, // 6: auth_v1.AuthService.Login:output_type -> auth_v1.LoginResponse
-	5, // 7: auth_v1.AuthService.CheckToken:output_type -> auth_v1.CheckTokenResponse
-	7, // 8: auth_v1.AuthService.RefreshToken:output_type -> auth_v1.RefreshTokenResponse
-	9, // 9: auth_v1.AuthService.GetUser:output_type -> auth_v1.GetUserResponse
+	7, // 7: auth_v1.AuthService.RefreshAccessToken:output_type -> auth_v1.RefreshTokenResponse
+	9, // 8: auth_v1.AuthService.GetUser:output_type -> auth_v1.GetUserResponse
+	5, // 9: auth_v1.AccessService.CheckToken:output_type -> auth_v1.CheckTokenResponse
 	5, // [5:10] is the sub-list for method output_type
 	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -596,7 +597,7 @@ func file_v1_auth_proto_init() {
 			NumEnums:      0,
 			NumMessages:   10,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_v1_auth_proto_goTypes,
 		DependencyIndexes: file_v1_auth_proto_depIdxs,

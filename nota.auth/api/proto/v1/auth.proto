@@ -21,14 +21,7 @@ service AuthService {
     };
   }
 
-  rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/auth/check"
-      body: "*"
-    };
-  }
-
-  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+  rpc RefreshAccessToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
     option (google.api.http) = {
       post: "/api/v1/auth/refresh"
       body: "*"
@@ -38,6 +31,15 @@ service AuthService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
       get: "/api/v1/auth/me"
+    };
+  }
+}
+
+service AccessService {
+  rpc CheckToken(CheckTokenRequest) returns (CheckTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/check"
+      body: "*"
     };
   }
 }

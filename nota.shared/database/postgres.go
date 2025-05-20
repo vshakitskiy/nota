@@ -28,3 +28,11 @@ func ConnectDatabase() (*gorm.DB, error) {
 
 	return db, nil
 }
+
+func Migrate(db *gorm.DB, dst ...interface{}) error {
+	if err := db.AutoMigrate(dst...); err != nil {
+		return errors.New("unable to migrate")
+	}
+
+	return nil
+}
