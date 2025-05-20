@@ -1,0 +1,30 @@
+package database
+
+import (
+	"errors"
+	"fmt"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"nota.shared/config"
+)
+
+func ConnectDatabase() (*gorm.DB, error) {
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/Moscow",
+		config.GetenvDefault("POSTGRES_HOST", "localhost"),
+		config.GetenvDefault("POSTGRES_USER", "admeanie"),
+		config.GetenvDefault("POSTGRES_PASSWORD", "shabi"),
+		config.GetenvDefault("POSTGRES_DB", "nota"),
+		config.GetenvDefault("POSTGRES_PORT", "4040"),
+	)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, errors.New("unable to connect to database")
+	}
+
+	db.Migrator()
+
+	return db, nil
+}
