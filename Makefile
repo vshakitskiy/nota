@@ -11,3 +11,6 @@ compose.down:
 fmt:
 	cd nota.auth && go fmt ./... \
 	# cd ../nota.shared && go fmt ./...
+
+auth.start:
+	cd nota.auth && go run cmd/main.go
