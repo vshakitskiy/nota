@@ -10,6 +10,12 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	ErrInvalidToken  = errors.New("invalid token")
+	ErrExpiredToken  = errors.New("expired token")
+	ErrTokenNotFound = errors.New("token not found")
+)
+
 type NotaClaims struct {
 	UserID uuid.UUID `json:"user_id"`
 	jwt.RegisteredClaims
@@ -19,7 +25,7 @@ func CreateJWT(userID uuid.UUID) (string, error) {
 	claims := NotaClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Second)), // TODO: change to 12 hours
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "nota",
 			Subject:   userID.String(),
@@ -42,21 +48,36 @@ func CreateJWT(userID uuid.UUID) (string, error) {
 }
 
 func ValidateJWT(tokenStr string) (*NotaClaims, error) {
-	claims := new(NotaClaims)
+	key, exists := os.LookupEnv("JWT_SECRET")
+	if !exists {
+		return nil, errors.New("unable to find jwt secret key")
+	}
 
 	token, err := jwt.ParseWithClaims(
 		tokenStr,
-		claims,
+		&NotaClaims{},
 		func(t *jwt.Token) (interface{}, error) {
-			return t, nil
+			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, ErrInvalidToken
+			}
+
+			return []byte(key), nil
 		},
 	)
 	if err != nil {
-		return nil, fmt.Errorf("error parsing token: %w", err)
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return token.Claims.(*NotaClaims), ErrExpiredToken
+		}
+		return nil, ErrInvalidToken
 	}
 
 	if !token.Valid {
-		return nil, fmt.Errorf("invalid token")
+		return nil, ErrInvalidToken
+	}
+
+	claims, ok := token.Claims.(*NotaClaims)
+	if !ok {
+		return nil, ErrInvalidToken
 	}
 
 	return claims, nil

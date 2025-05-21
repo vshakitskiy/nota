@@ -2,10 +2,16 @@ package repository
 
 import (
 	"context"
+	"errors"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"nota.auth/internal/model"
+)
+
+var (
+	ErrSessionNotFound = errors.New("session not found")
 )
 
 type SessionRepository interface {
@@ -14,7 +20,7 @@ type SessionRepository interface {
 		session *model.Session,
 	) error
 	GetByRefreshToken(ctx context.Context, id uuid.UUID) (*model.Session, error)
-	DeleteByUserID(ctx context.Context, id uuid.UUID) error
+	DeleteExpiredByUserID(ctx context.Context, id uuid.UUID) error
 }
 
 type SessionRepositoryImpl struct {
@@ -47,9 +53,22 @@ func (r *SessionRepositoryImpl) GetByRefreshToken(
 	panic("not implemented")
 }
 
-func (r *SessionRepositoryImpl) DeleteByUserID(
+func (r *SessionRepositoryImpl) DeleteExpiredByUserID(
 	ctx context.Context,
 	id uuid.UUID,
 ) error {
-	panic("not implemented")
+	err := r.db.
+		Where("user_id = ? and expires_at < ?", id, time.Now()).
+		Delete(&model.Session{}).
+		Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrSessionNotFound
+		}
+
+		return err
+	}
+
+	return nil
 }

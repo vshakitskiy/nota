@@ -38,7 +38,7 @@ func (r *UserRepositoryImpl) Create(
 
 	var exists bool
 	err := r.db.
-		Table("users").
+		Model(&model.User{}).
 		Select("count(*) > 0").
 		Where("email = ?", user.Email).
 		Find(&exists).Error
@@ -69,7 +69,6 @@ func (r *UserRepositoryImpl) GetByEmail(
 ) (*model.User, error) {
 	user := new(model.User)
 	err := r.db.
-		Table("users").
 		Where("email = ?", email).
 		First(user).Error
 	if err != nil {

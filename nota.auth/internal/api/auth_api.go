@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"log"
+	"errors"
 	"regexp"
 
 	"google.golang.org/grpc/codes"
@@ -51,13 +51,12 @@ func (h *AuthServiceHandler) Login(
 
 	tokenPair, err := h.service.Auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		switch err {
-		case service.ErrIncorrectPassword:
-			return nil, status.Error(codes.InvalidArgument, err.Error())
-		case repository.ErrUserNotFound:
+		switch {
+		case errors.Is(err, service.ErrIncorrectPassword):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, repository.ErrUserNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
 		default:
-			log.Println(err)
 			return nil, status.Error(
 				codes.Internal,
 				"something went wrong, try again later",
@@ -106,10 +105,10 @@ func (h *AuthServiceHandler) Register(
 
 	id, err := h.service.Auth.Register(ctx, req.Username, req.Email, req.Password)
 	if err != nil {
-		switch err {
-		case service.ErrInvalidPassword:
+		switch {
+		case errors.Is(err, service.ErrInvalidPassword):
 			return nil, status.Error(codes.InvalidArgument, err.Error())
-		case repository.ErrUserAlreadyExists:
+		case errors.Is(err, repository.ErrUserAlreadyExists):
 			return nil, status.Error(codes.AlreadyExists, err.Error())
 		default:
 			return nil, status.Error(
