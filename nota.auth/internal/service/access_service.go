@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"nota.auth/internal/repository"
 	"nota.auth/pkg/jwt"
+	"nota.shared/telemetry"
 )
 
 type AccessService interface {
@@ -23,6 +24,9 @@ func NewAccessService(repo *repository.Repository) *AccessServiceImpl {
 }
 
 func (s *AccessServiceImpl) Validate(ctx context.Context, accessToken string) (*uuid.UUID, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AccessService.Validate")
+	defer span.End()
+
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
 		return nil, err

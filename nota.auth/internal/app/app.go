@@ -16,6 +16,7 @@ import (
 	"nota.auth/internal/service"
 	pb "nota.auth/pkg/pb/v1"
 	"nota.shared/config"
+	"nota.shared/telemetry"
 )
 
 type App struct {
@@ -26,13 +27,28 @@ type App struct {
 
 func NewApp(db *gorm.DB) *App {
 	return &App{
-		db:     db,
-		port:   config.GetenvDefault("GRPC_PORT", "40401"),
-		server: grpc.NewServer(),
+		db:   db,
+		port: config.GetenvDefault("GRPC_PORT", "40401"),
 	}
 }
 
 func (a *App) Start(ctx context.Context) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	shutdownTracer, err := telemetry.NewTracerProvider(ctx, "nota.auth", "localhost:4317")
+	if err != nil {
+		log.Fatalf("failed to create tracer provider: %v", err)
+	}
+
+	defer func() {
+		if err := shutdownTracer(ctx); err != nil {
+			log.Printf("failed to shutdown tracer provider: %v", err)
+		}
+	}()
+
+	a.server = grpc.NewServer(telemetry.NewGRPCServerHandlers()...)
+
 	repo := repository.NewRepository(a.db)
 	service := service.NewService(repo)
 
@@ -43,9 +59,6 @@ func (a *App) Start(ctx context.Context) error {
 	pb.RegisterAccessServiceServer(a.server, accessHandler)
 
 	reflection.Register(a.server)
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	go func() {
 		lis, err := net.Listen("tcp", ":"+a.port)

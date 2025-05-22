@@ -11,6 +11,7 @@ import (
 	"nota.auth/pkg/bcrypt"
 	"nota.auth/pkg/crypto"
 	"nota.auth/pkg/jwt"
+	"nota.shared/telemetry"
 )
 
 var (
@@ -46,12 +47,17 @@ func (s *AuthServiceImpl) Register(
 	ctx context.Context,
 	username, email, password string,
 ) (*uuid.UUID, error) {
+	// TODO: ensure email is not already in use
+
+	ctx, span := telemetry.StartSpan(ctx, "AuthService.Register")
+	defer span.End()
+
 	user := &model.User{
 		Username: username,
 		Email:    email,
 	}
 
-	passwordHash, err := bcrypt.Hash(password)
+	passwordHash, err := bcrypt.Hash(ctx, password)
 	if err != nil {
 		return nil, ErrInvalidPassword
 	}
@@ -64,12 +70,15 @@ func (s *AuthServiceImpl) Login(
 	ctx context.Context,
 	email, password string,
 ) (*TokenPair, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthService.Login")
+	defer span.End()
+
 	user, err := s.repo.User.GetByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
 
-	ok := bcrypt.Compare(password, user.Password)
+	ok := bcrypt.Compare(ctx, password, user.Password)
 	if !ok {
 		return nil, ErrIncorrectPassword
 	}
@@ -100,6 +109,9 @@ func (s *AuthServiceImpl) RefreshToken(
 	ctx context.Context,
 	refreshToken string,
 ) (string, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthService.RefreshToken")
+	defer span.End()
+
 	session, err := s.repo.Session.GetByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return "", err
@@ -126,6 +138,9 @@ func (s *AuthServiceImpl) Logout(
 	ctx context.Context,
 	accessToken string,
 ) error {
+	ctx, span := telemetry.StartSpan(ctx, "AuthService.Logout")
+	defer span.End()
+
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
 		return err
@@ -138,6 +153,9 @@ func (s *AuthServiceImpl) GetUser(
 	ctx context.Context,
 	accessToken string,
 ) (*model.User, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthService.GetUser")
+	defer span.End()
+
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
 		return nil, err

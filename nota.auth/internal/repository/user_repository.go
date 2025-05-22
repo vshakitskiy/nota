@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"nota.auth/internal/model"
+	"nota.shared/telemetry"
 )
 
 var (
@@ -34,6 +35,9 @@ func (r *UserRepositoryImpl) Create(
 	ctx context.Context,
 	user *model.User,
 ) (*uuid.UUID, error) {
+	ctx, span := telemetry.StartSpan(ctx, "UserRepository.Create")
+	defer span.End()
+
 	user.ID = uuid.New()
 
 	var exists bool
@@ -60,6 +64,9 @@ func (r *UserRepositoryImpl) GetById(
 	ctx context.Context,
 	id uuid.UUID,
 ) (*model.User, error) {
+	ctx, span := telemetry.StartSpan(ctx, "UserRepository.GetById")
+	defer span.End()
+
 	user := new(model.User)
 	err := r.db.
 		Where("id = ?", id).
@@ -79,6 +86,9 @@ func (r *UserRepositoryImpl) GetByEmail(
 	ctx context.Context,
 	email string,
 ) (*model.User, error) {
+	ctx, span := telemetry.StartSpan(ctx, "UserRepository.GetByEmail")
+	defer span.End()
+
 	user := new(model.User)
 	err := r.db.
 		Where("email = ?", email).

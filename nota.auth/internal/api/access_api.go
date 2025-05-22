@@ -9,6 +9,7 @@ import (
 	"nota.auth/internal/service"
 	"nota.auth/pkg/jwt"
 	pb "nota.auth/pkg/pb/v1"
+	"nota.shared/telemetry"
 )
 
 type AccessServiceHandler struct {
@@ -26,6 +27,9 @@ func (h *AccessServiceHandler) ValidateToken(
 	ctx context.Context,
 	req *pb.ValidateTokenRequest,
 ) (*pb.ValidateTokenResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AccessHandler.ValidateToken")
+	defer span.End()
+
 	if req.AccessToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "access token is required")
 	}

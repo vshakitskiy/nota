@@ -12,6 +12,7 @@ import (
 	"nota.auth/internal/service"
 	"nota.auth/pkg/jwt"
 	pb "nota.auth/pkg/pb/v1"
+	"nota.shared/telemetry"
 )
 
 type AuthServiceHandler struct {
@@ -61,6 +62,9 @@ func (h *AuthServiceHandler) Login(
 	ctx context.Context,
 	req *pb.LoginRequest,
 ) (*pb.LoginResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Login")
+	defer span.End()
+
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if req.Email == "" || !emailRegex.MatchString(req.Email) || len(req.Email) > 254 {
 		return nil, status.Error(
@@ -101,6 +105,9 @@ func (h *AuthServiceHandler) RefreshToken(
 	ctx context.Context,
 	req *pb.RefreshTokenRequest,
 ) (*pb.RefreshTokenResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.RefreshToken")
+	defer span.End()
+
 	if req.RefreshToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
 	}
@@ -129,6 +136,9 @@ func (h *AuthServiceHandler) Register(
 	ctx context.Context,
 	req *pb.RegisterRequest,
 ) (*pb.RegisterResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Register")
+	defer span.End()
+
 	if req.Username == "" || len(req.Username) < 3 || len(req.Username) > 20 {
 		return nil, status.Error(
 			codes.InvalidArgument,
@@ -175,6 +185,9 @@ func (h *AuthServiceHandler) Logout(
 	ctx context.Context,
 	req *pb.LogoutRequest,
 ) (*pb.LogoutResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Logout")
+	defer span.End()
+
 	if req.AccessToken == "" {
 		return nil, status.Error(codes.InvalidArgument, "access token is required")
 	}

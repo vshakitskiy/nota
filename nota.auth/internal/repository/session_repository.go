@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"nota.auth/internal/model"
+	"nota.shared/telemetry"
 )
 
 var (
@@ -38,6 +39,9 @@ func (r *SessionRepositoryImpl) Create(
 	ctx context.Context,
 	session *model.Session,
 ) error {
+	ctx, span := telemetry.StartSpan(ctx, "SessionRepository.Create")
+	defer span.End()
+
 	session.ID = uuid.New()
 
 	if err := r.db.Create(session).Error; err != nil {
@@ -51,6 +55,9 @@ func (r *SessionRepositoryImpl) GetByRefreshToken(
 	ctx context.Context,
 	refreshToken string,
 ) (*model.Session, error) {
+	ctx, span := telemetry.StartSpan(ctx, "SessionRepository.GetByRefreshToken")
+	defer span.End()
+
 	session := new(model.Session)
 
 	if err := r.db.Where("refresh_token = ?", refreshToken).First(session).Error; err != nil {
@@ -68,6 +75,9 @@ func (r *SessionRepositoryImpl) DeleteExpiredByUserID(
 	ctx context.Context,
 	id uuid.UUID,
 ) error {
+	ctx, span := telemetry.StartSpan(ctx, "SessionRepository.DeleteExpiredByUserID")
+	defer span.End()
+
 	err := r.db.
 		Where("user_id = ? and expires_at < ?", id, time.Now()).
 		Delete(&model.Session{}).
@@ -84,6 +94,9 @@ func (r *SessionRepositoryImpl) DeleteByUserID(
 	ctx context.Context,
 	id uuid.UUID,
 ) error {
+	ctx, span := telemetry.StartSpan(ctx, "SessionRepository.DeleteByUserID")
+	defer span.End()
+
 	err := r.db.Where("user_id = ?", id).Delete(&model.Session{}).Error
 	if err != nil {
 		return err
