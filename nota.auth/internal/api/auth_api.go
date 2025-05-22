@@ -3,12 +3,14 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"regexp"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
+	"nota.auth/pkg/jwt"
 	pb "nota.auth/pkg/pb/v1"
 )
 
@@ -27,7 +29,32 @@ func (h *AuthServiceHandler) GetUser(
 	ctx context.Context,
 	req *pb.GetUserRequest,
 ) (*pb.GetUserResponse, error) {
-	panic("not implemented")
+	if req.AccessToken == "" {
+		return nil, status.Error(codes.InvalidArgument, "access token is required")
+	}
+
+	user, err := h.service.Auth.GetUser(ctx, req.AccessToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, jwt.ErrInvalidToken):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, jwt.ErrExpiredToken):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, repository.ErrUserNotFound):
+			return nil, status.Error(codes.NotFound, err.Error())
+		default:
+			return nil, status.Error(
+				codes.Internal,
+				"something went wrong, try again later",
+			)
+		}
+	}
+
+	return &pb.GetUserResponse{
+		UserId:   user.ID.String(),
+		Username: user.Username,
+		Email:    user.Email,
+	}, nil
 }
 
 func (h *AuthServiceHandler) Login(
@@ -70,11 +97,32 @@ func (h *AuthServiceHandler) Login(
 	}, nil
 }
 
-func (h *AuthServiceHandler) RefreshAccessToken(
+func (h *AuthServiceHandler) RefreshToken(
 	ctx context.Context,
 	req *pb.RefreshTokenRequest,
 ) (*pb.RefreshTokenResponse, error) {
-	panic("not implemented")
+	if req.RefreshToken == "" {
+		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
+	}
+
+	accessToken, err := h.service.Auth.RefreshToken(ctx, req.RefreshToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrSessionExpired):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		case errors.Is(err, repository.ErrSessionNotFound):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		default:
+			return nil, status.Error(
+				codes.Internal,
+				"something went wrong, try again later",
+			)
+		}
+	}
+
+	return &pb.RefreshTokenResponse{
+		AccessToken: accessToken,
+	}, nil
 }
 
 func (h *AuthServiceHandler) Register(
@@ -121,4 +169,29 @@ func (h *AuthServiceHandler) Register(
 	return &pb.RegisterResponse{
 		UserId: id.String(),
 	}, nil
+}
+
+func (h *AuthServiceHandler) Logout(
+	ctx context.Context,
+	req *pb.LogoutRequest,
+) (*pb.LogoutResponse, error) {
+	if req.AccessToken == "" {
+		return nil, status.Error(codes.InvalidArgument, "access token is required")
+	}
+
+	err := h.service.Auth.Logout(ctx, req.AccessToken)
+	if err != nil {
+		switch {
+		case errors.Is(err, jwt.ErrExpiredToken):
+			return nil, status.Error(codes.Unauthenticated, err.Error())
+		default:
+			fmt.Println(err)
+			return nil, status.Error(
+				codes.Internal,
+				"something went wrong, try again later",
+			)
+		}
+	}
+
+	return &pb.LogoutResponse{}, nil
 }

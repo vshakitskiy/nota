@@ -19,8 +19,9 @@ type SessionRepository interface {
 		ctx context.Context,
 		session *model.Session,
 	) error
-	GetByRefreshToken(ctx context.Context, id uuid.UUID) (*model.Session, error)
+	GetByRefreshToken(ctx context.Context, refreshToken string) (*model.Session, error)
 	DeleteExpiredByUserID(ctx context.Context, id uuid.UUID) error
+	DeleteByUserID(ctx context.Context, id uuid.UUID) error
 }
 
 type SessionRepositoryImpl struct {
@@ -48,9 +49,19 @@ func (r *SessionRepositoryImpl) Create(
 
 func (r *SessionRepositoryImpl) GetByRefreshToken(
 	ctx context.Context,
-	id uuid.UUID,
+	refreshToken string,
 ) (*model.Session, error) {
-	panic("not implemented")
+	session := new(model.Session)
+
+	if err := r.db.Where("refresh_token = ?", refreshToken).First(session).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrSessionNotFound
+		}
+
+		return nil, err
+	}
+
+	return session, nil
 }
 
 func (r *SessionRepositoryImpl) DeleteExpiredByUserID(
@@ -63,10 +74,18 @@ func (r *SessionRepositoryImpl) DeleteExpiredByUserID(
 		Error
 
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ErrSessionNotFound
-		}
+		return err
+	}
 
+	return nil
+}
+
+func (r *SessionRepositoryImpl) DeleteByUserID(
+	ctx context.Context,
+	id uuid.UUID,
+) error {
+	err := r.db.Where("user_id = ?", id).Delete(&model.Session{}).Error
+	if err != nil {
 		return err
 	}
 

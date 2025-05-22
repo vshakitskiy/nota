@@ -60,7 +60,19 @@ func (r *UserRepositoryImpl) GetById(
 	ctx context.Context,
 	id uuid.UUID,
 ) (*model.User, error) {
-	return nil, nil
+	user := new(model.User)
+	err := r.db.
+		Where("id = ?", id).
+		First(user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrUserNotFound
+		} else {
+			return nil, err
+		}
+	}
+
+	return user, nil
 }
 
 func (r *UserRepositoryImpl) GetByEmail(

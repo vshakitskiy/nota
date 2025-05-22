@@ -16,6 +16,7 @@ import (
 var (
 	ErrInvalidPassword   = errors.New("password is invalid")
 	ErrIncorrectPassword = errors.New("incorrect password")
+	ErrSessionExpired    = errors.New("session expired")
 )
 
 type TokenPair struct {
@@ -26,6 +27,9 @@ type TokenPair struct {
 type AuthService interface {
 	Register(ctx context.Context, username, email, password string) (*uuid.UUID, error)
 	Login(ctx context.Context, email, password string) (*TokenPair, error)
+	RefreshToken(ctx context.Context, refreshToken string) (string, error)
+	Logout(ctx context.Context, accessToken string) error
+	GetUser(ctx context.Context, accessToken string) (*model.User, error)
 }
 
 type AuthServiceImpl struct {
@@ -86,9 +90,58 @@ func (s *AuthServiceImpl) Login(
 		return nil, err
 	}
 
-	tokenPair := new(TokenPair)
-	tokenPair.AccessToken = accessToken
-	tokenPair.RefreshToken = refreshToken
+	return &TokenPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
 
-	return tokenPair, nil
+func (s *AuthServiceImpl) RefreshToken(
+	ctx context.Context,
+	refreshToken string,
+) (string, error) {
+	session, err := s.repo.Session.GetByRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return "", err
+	}
+
+	if session.ExpiresAt.Before(time.Now()) {
+		err := s.repo.Session.DeleteExpiredByUserID(ctx, session.UserID)
+		if err != nil {
+			return "", err
+		}
+
+		return "", ErrSessionExpired
+	}
+
+	accessToken, err := jwt.CreateJWT(session.UserID)
+	if err != nil {
+		return "", err
+	}
+
+	return accessToken, nil
+}
+
+func (s *AuthServiceImpl) Logout(
+	ctx context.Context,
+	accessToken string,
+) error {
+	claims, err := jwt.ValidateJWT(accessToken)
+	if err != nil {
+		return err
+	}
+
+	return s.repo.Session.DeleteByUserID(ctx, claims.UserID)
+}
+
+func (s *AuthServiceImpl) GetUser(
+	ctx context.Context,
+	accessToken string,
+) (*model.User, error) {
+	claims, err := jwt.ValidateJWT(accessToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.repo.User.GetById(ctx, claims.UserID)
 }
