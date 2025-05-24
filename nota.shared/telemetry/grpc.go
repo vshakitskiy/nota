@@ -2,10 +2,8 @@ package telemetry
 
 import (
 	"context"
-	"strings"
 
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 )
 
@@ -18,19 +16,19 @@ func NewGRPCServerHandlers() []grpc.ServerOption {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		span := trace.SpanFromContext(ctx)
+		// span := trace.SpanFromContext(ctx)
 
-		if span.IsRecording() {
-			parts := strings.Split(info.FullMethod, "/")
-			if len(parts) == 3 {
-				serviceParts := strings.Split(parts[1], ".")
-				service := serviceParts[len(serviceParts)-1]
+		// if span.IsRecording() {
+		// 	parts := strings.Split(info.FullMethod, "/")
+		// 	if len(parts) == 3 {
+		// 		serviceParts := strings.Split(parts[1], ".")
+		// 		service := serviceParts[len(serviceParts)-1]
 
-				method := parts[2]
+		// 		method := parts[2]
 
-				span.SetName(service + "." + method)
-			}
-		}
+		// 		span.SetName(service + "." + method)
+		// 	}
+		// }
 
 		return handler(ctx, req)
 	}

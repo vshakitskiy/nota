@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"errors"
-	"fmt"
 	"regexp"
 
 	"google.golang.org/grpc/codes"
@@ -30,12 +29,18 @@ func (h *AuthServiceHandler) GetUser(
 	ctx context.Context,
 	req *pb.GetUserRequest,
 ) (*pb.GetUserResponse, error) {
+	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.GetUser")
+	defer span.End()
+
 	if req.AccessToken == "" {
+		telemetry.RecordError(span, errors.New("access token is required"))
 		return nil, status.Error(codes.InvalidArgument, "access token is required")
 	}
 
 	user, err := h.service.Auth.GetUser(ctx, req.AccessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, jwt.ErrInvalidToken):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -67,6 +72,7 @@ func (h *AuthServiceHandler) Login(
 
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if req.Email == "" || !emailRegex.MatchString(req.Email) || len(req.Email) > 254 {
+		telemetry.RecordError(span, errors.New("email is required and must be valid"))
 		return nil, status.Error(
 			codes.InvalidArgument,
 			"email is required and must be valid",
@@ -74,6 +80,7 @@ func (h *AuthServiceHandler) Login(
 	}
 
 	if req.Password == "" || len(req.Password) < 8 || len(req.Password) > 20 {
+		telemetry.RecordError(span, errors.New("password is required and must be between 8 and 20 characters long"))
 		return nil, status.Error(
 			codes.InvalidArgument,
 			"password is required and must be between 8 and 20 characters long",
@@ -82,6 +89,8 @@ func (h *AuthServiceHandler) Login(
 
 	tokenPair, err := h.service.Auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, service.ErrIncorrectPassword):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -109,11 +118,14 @@ func (h *AuthServiceHandler) RefreshToken(
 	defer span.End()
 
 	if req.RefreshToken == "" {
+		telemetry.RecordError(span, errors.New("refresh token is required"))
 		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
 	}
 
 	accessToken, err := h.service.Auth.RefreshToken(ctx, req.RefreshToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, service.ErrSessionExpired):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -140,6 +152,7 @@ func (h *AuthServiceHandler) Register(
 	defer span.End()
 
 	if req.Username == "" || len(req.Username) < 3 || len(req.Username) > 20 {
+		telemetry.RecordError(span, errors.New("username is required and must be between 3 and 20 characters long"))
 		return nil, status.Error(
 			codes.InvalidArgument,
 			"username is required and must be between 3 and 20 characters long",
@@ -148,6 +161,7 @@ func (h *AuthServiceHandler) Register(
 
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if req.Email == "" || !emailRegex.MatchString(req.Email) || len(req.Email) > 254 {
+		telemetry.RecordError(span, errors.New("email is required and must be valid"))
 		return nil, status.Error(
 			codes.InvalidArgument,
 			"email is required and must be valid",
@@ -155,6 +169,7 @@ func (h *AuthServiceHandler) Register(
 	}
 
 	if req.Password == "" || len(req.Password) < 8 || len(req.Password) > 20 {
+		telemetry.RecordError(span, errors.New("password is required and must be between 8 and 20 characters long"))
 		return nil, status.Error(
 			codes.InvalidArgument,
 			"password is required and must be between 8 and 20 characters long",
@@ -163,6 +178,8 @@ func (h *AuthServiceHandler) Register(
 
 	id, err := h.service.Auth.Register(ctx, req.Username, req.Email, req.Password)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, service.ErrInvalidPassword):
 			return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -189,16 +206,18 @@ func (h *AuthServiceHandler) Logout(
 	defer span.End()
 
 	if req.AccessToken == "" {
+		telemetry.RecordError(span, errors.New("access token is required"))
 		return nil, status.Error(codes.InvalidArgument, "access token is required")
 	}
 
 	err := h.service.Auth.Logout(ctx, req.AccessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, jwt.ErrExpiredToken):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		default:
-			fmt.Println(err)
 			return nil, status.Error(
 				codes.Internal,
 				"something went wrong, try again later",

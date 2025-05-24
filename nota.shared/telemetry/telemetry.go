@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -67,4 +68,17 @@ func StartSpan(ctx context.Context, name string) (context.Context, trace.Span) {
 	ctx, span := otel.Tracer("").Start(ctx, name)
 
 	return ctx, span
+}
+
+func RecordError(span trace.Span, err error) {
+	if err == nil {
+		return
+	}
+
+	if !span.IsRecording() {
+		return
+	}
+
+	span.RecordError(err)
+	span.SetStatus(codes.Error, err.Error())
 }

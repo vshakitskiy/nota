@@ -13,6 +13,7 @@ func Hash(ctx context.Context, password string) (string, error) {
 
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return "", err
 	}
 
@@ -24,6 +25,7 @@ func Compare(ctx context.Context, password, hash string) bool {
 	defer span.End()
 
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)); err != nil {
+		telemetry.RecordError(span, err)
 		return false
 	}
 

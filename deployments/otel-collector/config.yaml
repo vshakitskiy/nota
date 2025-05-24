@@ -11,6 +11,11 @@ processors:
     timeout: 1s
     send_batch_size: 1024
 
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 4000
+    spike_limit_mib: 500
+
 exporters:
   debug:
     verbosity: detailed
@@ -25,7 +30,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [batch, memory_limiter]
       exporters: [debug, otlp/jaeger]
     
     # metrics:

@@ -14,3 +14,6 @@ fmt:
 
 auth.start:
 	cd nota.auth && go run cmd/main.go
+
+gateway.start:
+	cd nota.gateway && go run cmd/main.go

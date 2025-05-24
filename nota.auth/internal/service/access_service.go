@@ -29,6 +29,7 @@ func (s *AccessServiceImpl) Validate(ctx context.Context, accessToken string) (*
 
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 

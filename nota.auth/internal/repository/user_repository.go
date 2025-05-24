@@ -42,18 +42,22 @@ func (r *UserRepositoryImpl) Create(
 
 	var exists bool
 	err := r.db.
+		WithContext(ctx).
 		Model(&model.User{}).
 		Select("count(*) > 0").
 		Where("email = ?", user.Email).
 		Find(&exists).Error
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 	if exists {
+		telemetry.RecordError(span, ErrUserAlreadyExists)
 		return nil, ErrUserAlreadyExists
 	}
 
 	if err := r.db.Create(user).Error; err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 
@@ -69,12 +73,15 @@ func (r *UserRepositoryImpl) GetById(
 
 	user := new(model.User)
 	err := r.db.
+		WithContext(ctx).
 		Where("id = ?", id).
 		First(user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			telemetry.RecordError(span, ErrUserNotFound)
 			return nil, ErrUserNotFound
 		} else {
+			telemetry.RecordError(span, err)
 			return nil, err
 		}
 	}
@@ -91,12 +98,15 @@ func (r *UserRepositoryImpl) GetByEmail(
 
 	user := new(model.User)
 	err := r.db.
+		WithContext(ctx).
 		Where("email = ?", email).
 		First(user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			telemetry.RecordError(span, ErrUserNotFound)
 			return nil, ErrUserNotFound
 		} else {
+			telemetry.RecordError(span, err)
 			return nil, err
 		}
 	}

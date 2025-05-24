@@ -59,6 +59,7 @@ func (s *AuthServiceImpl) Register(
 
 	passwordHash, err := bcrypt.Hash(ctx, password)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, ErrInvalidPassword
 	}
 	user.Password = passwordHash
@@ -75,16 +76,19 @@ func (s *AuthServiceImpl) Login(
 
 	user, err := s.repo.User.GetByEmail(ctx, email)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 
 	ok := bcrypt.Compare(ctx, password, user.Password)
 	if !ok {
+		telemetry.RecordError(span, ErrIncorrectPassword)
 		return nil, ErrIncorrectPassword
 	}
 
 	accessToken, err := jwt.CreateJWT(user.ID)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 	refreshToken := crypto.GenerateRandomBase64(64)
@@ -96,6 +100,7 @@ func (s *AuthServiceImpl) Login(
 	}
 
 	if err := s.repo.Session.Create(ctx, session); err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 
@@ -114,12 +119,14 @@ func (s *AuthServiceImpl) RefreshToken(
 
 	session, err := s.repo.Session.GetByRefreshToken(ctx, refreshToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return "", err
 	}
 
 	if session.ExpiresAt.Before(time.Now()) {
 		err := s.repo.Session.DeleteExpiredByUserID(ctx, session.UserID)
 		if err != nil {
+			telemetry.RecordError(span, err)
 			return "", err
 		}
 
@@ -128,6 +135,7 @@ func (s *AuthServiceImpl) RefreshToken(
 
 	accessToken, err := jwt.CreateJWT(session.UserID)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return "", err
 	}
 
@@ -143,6 +151,7 @@ func (s *AuthServiceImpl) Logout(
 
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return err
 	}
 
@@ -158,6 +167,7 @@ func (s *AuthServiceImpl) GetUser(
 
 	claims, err := jwt.ValidateJWT(accessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 

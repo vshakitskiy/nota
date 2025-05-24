@@ -31,11 +31,14 @@ func (h *AccessServiceHandler) ValidateToken(
 	defer span.End()
 
 	if req.AccessToken == "" {
+		telemetry.RecordError(span, errors.New("access token is required"))
 		return nil, status.Error(codes.InvalidArgument, "access token is required")
 	}
 
 	userID, err := h.service.Access.Validate(ctx, req.AccessToken)
 	if err != nil {
+		telemetry.RecordError(span, err)
+
 		switch {
 		case errors.Is(err, jwt.ErrInvalidToken):
 			return nil, status.Error(codes.Unauthenticated, err.Error())

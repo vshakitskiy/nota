@@ -13,3 +13,5 @@ plugins:
     out: pkg/pb
     opt:
       - paths=source_relative
+  - remote: buf.build/grpc-ecosystem/openapiv2:v2.20.0
+    out: swagger

@@ -6,6 +6,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 	"nota.shared/config"
 )
 
@@ -22,6 +23,10 @@ func ConnectDatabase() (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, errors.New("unable to connect to database")
+	}
+
+	if err := db.Use(tracing.NewPlugin()); err != nil {
+		return nil, errors.New("unable to use database tracing plugin")
 	}
 
 	db.Migrator()

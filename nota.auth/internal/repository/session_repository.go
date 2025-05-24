@@ -44,7 +44,8 @@ func (r *SessionRepositoryImpl) Create(
 
 	session.ID = uuid.New()
 
-	if err := r.db.Create(session).Error; err != nil {
+	if err := r.db.WithContext(ctx).Create(session).Error; err != nil {
+		telemetry.RecordError(span, err)
 		return err
 	}
 
@@ -60,11 +61,13 @@ func (r *SessionRepositoryImpl) GetByRefreshToken(
 
 	session := new(model.Session)
 
-	if err := r.db.Where("refresh_token = ?", refreshToken).First(session).Error; err != nil {
+	if err := r.db.WithContext(ctx).Where("refresh_token = ?", refreshToken).First(session).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
+			telemetry.RecordError(span, ErrSessionNotFound)
 			return nil, ErrSessionNotFound
 		}
 
+		telemetry.RecordError(span, err)
 		return nil, err
 	}
 
@@ -79,11 +82,13 @@ func (r *SessionRepositoryImpl) DeleteExpiredByUserID(
 	defer span.End()
 
 	err := r.db.
+		WithContext(ctx).
 		Where("user_id = ? and expires_at < ?", id, time.Now()).
 		Delete(&model.Session{}).
 		Error
 
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return err
 	}
 
@@ -97,8 +102,9 @@ func (r *SessionRepositoryImpl) DeleteByUserID(
 	ctx, span := telemetry.StartSpan(ctx, "SessionRepository.DeleteByUserID")
 	defer span.End()
 
-	err := r.db.Where("user_id = ?", id).Delete(&model.Session{}).Error
+	err := r.db.WithContext(ctx).Where("user_id = ?", id).Delete(&model.Session{}).Error
 	if err != nil {
+		telemetry.RecordError(span, err)
 		return err
 	}
 
