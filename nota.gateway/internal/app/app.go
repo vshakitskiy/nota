@@ -77,6 +77,16 @@ func (a *App) Start(ctx context.Context) error {
 		}
 	}()
 
+	shutdownMeter, err := telemetry.NewMeterProvider(ctx, "nota.gateway", "localhost:4317")
+	if err != nil {
+		log.Fatalf("failed to create meter provider: %v", err)
+	}
+	defer func() {
+		if err := shutdownMeter(ctx); err != nil {
+			log.Printf("failed to shutdown meter provider: %v", err)
+		}
+	}()
+
 	var dialOpts = []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),

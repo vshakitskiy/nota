@@ -24,7 +24,7 @@ func NewTracerProvider(
 		semconv.ServiceNameKey.String(serviceName),
 	))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create resource: %w", err)
+		return nil, fmt.Errorf("failed to create resource for trace: %w", err)
 	}
 
 	traceExporter, err := otlptracegrpc.New(

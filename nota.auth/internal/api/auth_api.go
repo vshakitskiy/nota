@@ -7,6 +7,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
 	"nota.auth/pkg/jwt"
@@ -89,6 +90,7 @@ func (h *AuthServiceHandler) Login(
 
 	tokenPair, err := h.service.Auth.Login(ctx, req.Email, req.Password)
 	if err != nil {
+		metric.FailedLoginsCounter.Add(ctx, 1)
 		telemetry.RecordError(span, err)
 
 		switch {
@@ -104,6 +106,8 @@ func (h *AuthServiceHandler) Login(
 		}
 	}
 
+	metric.ActiveSessionsCounter.Add(ctx, 1)
+	metric.SuccessfulLoginsCounter.Add(ctx, 1)
 	return &pb.LoginResponse{
 		AccessToken:  tokenPair.AccessToken,
 		RefreshToken: tokenPair.RefreshToken,
@@ -128,6 +132,7 @@ func (h *AuthServiceHandler) RefreshToken(
 
 		switch {
 		case errors.Is(err, service.ErrSessionExpired):
+			metric.ActiveSessionsCounter.Add(ctx, -1)
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		case errors.Is(err, repository.ErrSessionNotFound):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -193,6 +198,7 @@ func (h *AuthServiceHandler) Register(
 		}
 	}
 
+	metric.UserRegistrationsCounter.Add(ctx, 1)
 	return &pb.RegisterResponse{
 		UserId: id.String(),
 	}, nil
@@ -225,5 +231,6 @@ func (h *AuthServiceHandler) Logout(
 		}
 	}
 
+	metric.ActiveSessionsCounter.Add(ctx, -1)
 	return &pb.LogoutResponse{}, nil
 }

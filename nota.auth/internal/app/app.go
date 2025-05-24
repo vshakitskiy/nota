@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"gorm.io/gorm"
 	"nota.auth/internal/api"
+	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
 	pb "nota.auth/pkg/pb/v1"
@@ -40,12 +41,22 @@ func (a *App) Start(ctx context.Context) error {
 	if err != nil {
 		log.Fatalf("failed to create tracer provider: %v", err)
 	}
-
 	defer func() {
 		if err := shutdownTracer(ctx); err != nil {
 			log.Printf("failed to shutdown tracer provider: %v", err)
 		}
 	}()
+
+	shutdownMeter, err := telemetry.NewMeterProvider(ctx, "nota.auth", "localhost:4317")
+	if err != nil {
+		log.Fatalf("failed to create meter provider: %v", err)
+	}
+	defer func() {
+		if err := shutdownMeter(ctx); err != nil {
+			log.Printf("failed to shutdown meter provider: %v", err)
+		}
+	}()
+	metric.Init()
 
 	a.server = grpc.NewServer(telemetry.NewGRPCServerHandlers()...)
 

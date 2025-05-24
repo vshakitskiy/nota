@@ -1,3 +1,4 @@
+name: nota
 services:
   db:
     container_name: postgres
@@ -18,7 +19,7 @@ services:
       timeout: 10s
       retries: 5
     networks:
-      - nota-network
+      - nota_network
 
   # Jaeger
   jaeger:
@@ -30,7 +31,7 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
     networks:
-      - nota-network
+      - nota_network
 
   # OpenTelemetry Collector
   otel-collector:
@@ -45,11 +46,47 @@ services:
     depends_on:
       - jaeger
     networks:
-      - nota-network
+      - nota_network
+  
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    depends_on:
+      - otel-collector
+    networks:
+      - nota_network
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - nota_network
+    # environment:
+      # - GF_INSTALL_PLUGINS=grafana-jaeger-datasource
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+      - jaeger
 
 networks:
-  nota-network:
+  nota_network:
+    name: nota_network
     driver: bridge
 
 volumes:
   db:
+  grafana_data:

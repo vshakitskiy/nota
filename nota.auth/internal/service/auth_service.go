@@ -64,7 +64,13 @@ func (s *AuthServiceImpl) Register(
 	}
 	user.Password = passwordHash
 
-	return s.repo.User.Create(ctx, user)
+	userID, err := s.repo.User.Create(ctx, user)
+	if err != nil {
+		telemetry.RecordError(span, err)
+		return nil, err
+	}
+
+	return userID, nil
 }
 
 func (s *AuthServiceImpl) Login(

@@ -1,12 +1,12 @@
 compose.up:
 	docker compose --env-file .env \
 	-f deployments/docker-compose.yaml \
-	-p nota_postgres up -d
+	up -d
 
 compose.down:
 	docker compose --env-file .env \
 	-f deployments/docker-compose.yaml \
-	-p nota_postgres down
+	down
 
 fmt:
 	cd nota.auth && go fmt ./... \
