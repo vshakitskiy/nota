@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"gorm.io/gorm"
 	"nota.auth/internal/api"
+	"nota.auth/internal/interceptor"
 	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
@@ -58,7 +59,23 @@ func (a *App) Start(ctx context.Context) error {
 	}()
 	metric.Init()
 
-	a.server = grpc.NewServer(telemetry.NewGRPCServerHandlers()...)
+	statsHandler, customInterceptor := telemetry.NewGRPCServerHandlers()
+
+	authInterceptor := interceptor.AuthUnaryServerInterceptor([]string{
+		// "/auth.AuthService/GetUser",
+		// "/auth.AuthService/Login",
+		// "/auth.AuthService/Logout",
+		"ValidateToken",
+		// "/auth.AuthService/Register",
+	})
+
+	a.server = grpc.NewServer(
+		statsHandler,
+		grpc.ChainUnaryInterceptor(
+			customInterceptor,
+			authInterceptor,
+		),
+	)
 
 	repo := repository.NewRepository(a.db)
 	service := service.NewService(repo)

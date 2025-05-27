@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -25,7 +26,13 @@ func IsHeaderAllowed(allowedHeaders map[string]struct{}) func(string) (string, b
 func MetadataHandler(ctx context.Context, req *http.Request) metadata.MD {
 	md := metadata.MD{}
 
+	accessToken, ok := ctx.Value("accessToken").(string)
+	if ok {
+		md.Set("x-access-token", accessToken)
+	}
+
 	userID, ok := ctx.Value("userID").(string)
+	fmt.Println(userID)
 	if ok {
 		md.Set("x-user-id", userID)
 	}

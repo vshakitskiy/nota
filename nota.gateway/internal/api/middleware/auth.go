@@ -39,10 +39,11 @@ func AuthMiddleware(protectedPrefixes []string) gin.HandlerFunc {
 			return
 		}
 
-		_ = parts[1]
-		userID := "dde009e4-aad0-4570-b40a-cb0caee2a1c1"
+		token := parts[1]
+		ctx := context.WithValue(c.Request.Context(), "accessToken", token)
 
-		ctx := context.WithValue(c.Request.Context(), "userID", userID)
+		userID := "dde009e4-aad0-4570-b40a-cb0caee2a1c1"
+		ctx = context.WithValue(ctx, "userID", userID)
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()

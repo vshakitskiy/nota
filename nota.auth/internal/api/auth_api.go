@@ -7,6 +7,7 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"nota.auth/internal/interceptor"
 	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
@@ -33,12 +34,14 @@ func (h *AuthServiceHandler) GetUser(
 	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.GetUser")
 	defer span.End()
 
-	if req.AccessToken == "" {
-		telemetry.RecordError(span, errors.New("access token is required"))
-		return nil, status.Error(codes.InvalidArgument, "access token is required")
-	}
+	// if req.AccessToken == "" {
+	// 	telemetry.RecordError(span, errors.New("access token is required"))
+	// 	return nil, status.Error(codes.InvalidArgument, "access token is required")
+	// }
 
-	user, err := h.service.Auth.GetUser(ctx, req.AccessToken)
+	accessToken := interceptor.GetAccessTokenStr(ctx)
+
+	user, err := h.service.Auth.GetUser(ctx, accessToken)
 	if err != nil {
 		telemetry.RecordError(span, err)
 
@@ -211,12 +214,9 @@ func (h *AuthServiceHandler) Logout(
 	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Logout")
 	defer span.End()
 
-	if req.AccessToken == "" {
-		telemetry.RecordError(span, errors.New("access token is required"))
-		return nil, status.Error(codes.InvalidArgument, "access token is required")
-	}
+	accessToken := interceptor.GetAccessTokenStr(ctx)
 
-	err := h.service.Auth.Logout(ctx, req.AccessToken)
+	err := h.service.Auth.Logout(ctx, accessToken)
 	if err != nil {
 		telemetry.RecordError(span, err)
 

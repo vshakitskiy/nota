@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"nota.gateway/internal/api/handler"
+	"nota.gateway/internal/api/middleware"
 	"nota.shared/config"
 	"nota.shared/telemetry"
 )
@@ -41,6 +42,10 @@ func NewApp() *App {
 			return fmt.Sprintf("%s %s", c.Request.Method, c.Request.URL.Path)
 		}),
 	))
+
+	router.Use(middleware.AuthMiddleware([]string{
+		"/api/v1/auth/check",
+	}))
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})

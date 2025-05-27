@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewGRPCServerHandlers() []grpc.ServerOption {
+func NewGRPCServerHandlers() (grpc.ServerOption, grpc.UnaryServerInterceptor) {
 	baseHandler := otelgrpc.NewServerHandler()
 
 	customInterceptor := func(
@@ -33,8 +33,5 @@ func NewGRPCServerHandlers() []grpc.ServerOption {
 		return handler(ctx, req)
 	}
 
-	return []grpc.ServerOption{
-		grpc.StatsHandler(baseHandler),
-		grpc.UnaryInterceptor(customInterceptor),
-	}
+	return grpc.StatsHandler(baseHandler), customInterceptor
 }

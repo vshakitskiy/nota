@@ -71,15 +71,11 @@ message LoginResponse {
   string refresh_token = 2;
 }
 
-message LogoutRequest {
-  string access_token = 1;
-}
+message LogoutRequest {}
 
 message LogoutResponse {}
 
-message ValidateTokenRequest {
-  string access_token = 1;
-}
+message ValidateTokenRequest {}
 
 message ValidateTokenResponse {
   string user_id = 1;
@@ -93,9 +89,7 @@ message RefreshTokenResponse {
   string access_token = 1;
 }
 
-message GetUserRequest {
-  string access_token = 1;
-}
+message GetUserRequest {}
 
 message GetUserResponse {
   string user_id = 1;

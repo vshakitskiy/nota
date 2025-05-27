@@ -132,14 +132,6 @@
             }
           }
         },
-        "parameters": [
-          {
-            "name": "accessToken",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
         "tags": [
           "AuthService"
         ]
@@ -248,12 +240,7 @@
       }
     },
     "auth_v1LogoutRequest": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string"
-        }
-      }
+      "type": "object"
     },
     "auth_v1LogoutResponse": {
       "type": "object"
@@ -297,12 +284,7 @@
       }
     },
     "auth_v1ValidateTokenRequest": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string"
-        }
-      }
+      "type": "object"
     },
     "auth_v1ValidateTokenResponse": {
       "type": "object",
