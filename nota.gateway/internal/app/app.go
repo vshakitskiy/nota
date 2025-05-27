@@ -17,10 +17,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"nota.gateway/internal/api/handler"
-	"nota.gateway/internal/util"
 	"nota.shared/config"
 	"nota.shared/telemetry"
 )
+
+var allowedHeaders = map[string]struct{}{
+	"x-request-id": {},
+}
 
 type App struct {
 	port   string
@@ -39,26 +42,22 @@ func NewApp() *App {
 		}),
 	))
 
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+
+	router.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "unknown endpoint"})
+	})
+
 	return &App{
 		port:   config.GetenvDefault("PORT", "8080"),
 		router: router,
 		gwmux: runtime.NewServeMux(
-			runtime.WithOutgoingHeaderMatcher(util.IsHeaderAllowed),
-			// runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
-
-			// }),
-
-			runtime.WithErrorHandler(func(
-				ctx context.Context,
-				mux *runtime.ServeMux,
-				m runtime.Marshaler,
-				w http.ResponseWriter,
-				r *http.Request,
-				err error,
-			) {
-				log.Printf("GRPC Gateway Error: %v, Path: %s", err, r.URL.Path)
-				runtime.DefaultHTTPErrorHandler(ctx, mux, m, w, r, err)
-			}),
+			runtime.WithOutgoingHeaderMatcher(handler.IsHeaderAllowed(allowedHeaders)),
+			runtime.WithMetadata(handler.MetadataHandler),
+			runtime.WithErrorHandler(handler.ErrorHandler),
+			runtime.WithRoutingErrorHandler(handler.RoutingErrorHandler),
 		),
 	}
 }
@@ -97,10 +96,6 @@ func (a *App) Start(ctx context.Context) error {
 	}
 
 	a.router.Group("/api/v1/*{grpc_gateway}").Any("", gin.WrapH(a.gwmux))
-
-	a.router.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
 
 	srv := &http.Server{
 		Addr:    ":" + a.port,
