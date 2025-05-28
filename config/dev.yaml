@@ -1,0 +1,25 @@
+jwt:
+  expiration: 12h
+
+session:
+  expiration: 288h
+
+auth:
+  name: "nota.auth"
+  env:
+    - auth
+    - postgres
+    - otel
+  protected_rpc:
+    - "ValidateToken"
+    - "Logout"
+
+gateway:
+  name: "nota.gateway"
+  env:
+    - jwt
+    - otel
+    - auth
+    - gateway
+  protected_routes:
+    - "/api/v1/auth/check"

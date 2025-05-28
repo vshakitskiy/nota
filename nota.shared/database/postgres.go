@@ -7,17 +7,17 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/plugin/opentelemetry/tracing"
-	"nota.shared/config"
+	"nota.shared/env"
 )
 
 func ConnectDatabase() (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Europe/Moscow",
-		config.GetenvDefault("POSTGRES_HOST", "localhost"),
-		config.GetenvDefault("POSTGRES_USER", "admeanie"),
-		config.GetenvDefault("POSTGRES_PASSWORD", "shabi"),
-		config.GetenvDefault("POSTGRES_DB", "nota"),
-		config.GetenvDefault("POSTGRES_PORT", "4040"),
+		env.GetPostgresHost(),
+		env.GetPostgresUser(),
+		env.GetPostgresPassword(),
+		env.GetPostgresDB(),
+		env.GetPostgresPort(),
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

@@ -11,6 +11,7 @@ import (
 	"nota.auth/pkg/bcrypt"
 	"nota.auth/pkg/crypto"
 	"nota.auth/pkg/jwt"
+	"nota.shared/config"
 	"nota.shared/telemetry"
 )
 
@@ -35,11 +36,13 @@ type AuthService interface {
 
 type AuthServiceImpl struct {
 	repo *repository.Repository
+	cfg  *config.Jwt
 }
 
-func NewAuthService(repo *repository.Repository) *AuthServiceImpl {
+func NewAuthService(repo *repository.Repository, cfg *config.Jwt) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		repo: repo,
+		cfg:  cfg,
 	}
 }
 
@@ -92,7 +95,7 @@ func (s *AuthServiceImpl) Login(
 		return nil, ErrIncorrectPassword
 	}
 
-	accessToken, err := jwt.CreateJWT(user.ID)
+	accessToken, err := jwt.CreateJWT(user.ID, s.cfg.Exp)
 	if err != nil {
 		telemetry.RecordError(span, err)
 		return nil, err
@@ -102,7 +105,6 @@ func (s *AuthServiceImpl) Login(
 	session := &model.Session{
 		RefreshToken: refreshToken,
 		UserID:       user.ID,
-		ExpiresAt:    time.Now().Add(12 * 24 * time.Hour),
 	}
 
 	if err := s.repo.Session.Create(ctx, session); err != nil {
@@ -139,7 +141,7 @@ func (s *AuthServiceImpl) RefreshToken(
 		return "", ErrSessionExpired
 	}
 
-	accessToken, err := jwt.CreateJWT(session.UserID)
+	accessToken, err := jwt.CreateJWT(session.UserID, s.cfg.Exp)
 	if err != nil {
 		telemetry.RecordError(span, err)
 		return "", err

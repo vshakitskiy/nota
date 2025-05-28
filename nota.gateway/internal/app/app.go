@@ -19,6 +19,7 @@ import (
 	"nota.gateway/internal/api/handler"
 	"nota.gateway/internal/api/middleware"
 	"nota.shared/config"
+	"nota.shared/env"
 	"nota.shared/telemetry"
 )
 
@@ -27,25 +28,25 @@ var allowedHeaders = map[string]struct{}{
 }
 
 type App struct {
+	cfg    *config.Gateway
+	host   string
 	port   string
 	gwmux  *runtime.ServeMux
 	router *gin.Engine
 }
 
-func NewApp() *App {
+func NewApp(cfg *config.Gateway) *App {
 	router := gin.New()
 	router.Use(gin.Logger())
 
 	router.Use(otelgin.Middleware(
-		"nota.gateway",
+		cfg.Name,
 		otelgin.WithSpanNameFormatter(func(c *gin.Context) string {
 			return fmt.Sprintf("%s %s", c.Request.Method, c.Request.URL.Path)
 		}),
 	))
 
-	router.Use(middleware.AuthMiddleware([]string{
-		"/api/v1/auth/check",
-	}))
+	router.Use(middleware.AuthMiddleware(cfg.ProtectedRoutes))
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -56,7 +57,9 @@ func NewApp() *App {
 	})
 
 	return &App{
-		port:   config.GetenvDefault("PORT", "8080"),
+		cfg:    cfg,
+		host:   env.GetGatewayHost(),
+		port:   env.GetGatewayPort(),
 		router: router,
 		gwmux: runtime.NewServeMux(
 			runtime.WithOutgoingHeaderMatcher(handler.IsHeaderAllowed(allowedHeaders)),
@@ -71,7 +74,7 @@ func (a *App) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	shutdownTracer, err := telemetry.NewTracerProvider(ctx, "nota.gateway", "localhost:4317")
+	shutdownTracer, err := telemetry.NewTracerProvider(ctx, a.cfg.Name, env.GetOtelCollector())
 	if err != nil {
 		log.Fatalf("failed to create tracer provider: %v", err)
 	}
@@ -81,7 +84,7 @@ func (a *App) Start(ctx context.Context) error {
 		}
 	}()
 
-	shutdownMeter, err := telemetry.NewMeterProvider(ctx, "nota.gateway", "localhost:4317")
+	shutdownMeter, err := telemetry.NewMeterProvider(ctx, a.cfg.Name, env.GetOtelCollector())
 	if err != nil {
 		log.Fatalf("failed to create meter provider: %v", err)
 	}

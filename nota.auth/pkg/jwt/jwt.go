@@ -21,11 +21,11 @@ type NotaClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateJWT(userID uuid.UUID) (string, error) {
+func CreateJWT(userID uuid.UUID, exp time.Duration) (string, error) {
 	claims := NotaClaims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Second)), // TODO: change to 12 hours
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(exp)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    "nota",
 			Subject:   userID.String(),

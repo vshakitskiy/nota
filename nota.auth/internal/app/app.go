@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -18,19 +19,22 @@ import (
 	"nota.auth/internal/service"
 	pb "nota.auth/pkg/pb/v1"
 	"nota.shared/config"
+	"nota.shared/env"
 	"nota.shared/telemetry"
 )
 
 type App struct {
 	db     *gorm.DB
+	cfg    *config.Auth
 	port   string
 	server *grpc.Server
 }
 
-func NewApp(db *gorm.DB) *App {
+func NewApp(db *gorm.DB, cfg *config.Auth) *App {
 	return &App{
 		db:   db,
-		port: config.GetenvDefault("GRPC_PORT", "40401"),
+		cfg:  cfg,
+		port: env.GetAuthPort(),
 	}
 }
 
@@ -38,7 +42,7 @@ func (a *App) Start(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	shutdownTracer, err := telemetry.NewTracerProvider(ctx, "nota.auth", "localhost:4317")
+	shutdownTracer, err := telemetry.NewTracerProvider(ctx, a.cfg.Name, env.GetOtelCollector())
 	if err != nil {
 		log.Fatalf("failed to create tracer provider: %v", err)
 	}
@@ -48,7 +52,7 @@ func (a *App) Start(ctx context.Context) error {
 		}
 	}()
 
-	shutdownMeter, err := telemetry.NewMeterProvider(ctx, "nota.auth", "localhost:4317")
+	shutdownMeter, err := telemetry.NewMeterProvider(ctx, a.cfg.Name, env.GetOtelCollector())
 	if err != nil {
 		log.Fatalf("failed to create meter provider: %v", err)
 	}
@@ -61,13 +65,7 @@ func (a *App) Start(ctx context.Context) error {
 
 	statsHandler, customInterceptor := telemetry.NewGRPCServerHandlers()
 
-	authInterceptor := interceptor.AuthUnaryServerInterceptor([]string{
-		// "/auth.AuthService/GetUser",
-		// "/auth.AuthService/Login",
-		// "/auth.AuthService/Logout",
-		"ValidateToken",
-		// "/auth.AuthService/Register",
-	})
+	authInterceptor := interceptor.AuthUnaryServerInterceptor(a.cfg.ProtectedRPC)
 
 	a.server = grpc.NewServer(
 		statsHandler,
@@ -77,8 +75,18 @@ func (a *App) Start(ctx context.Context) error {
 		),
 	)
 
-	repo := repository.NewRepository(a.db)
-	service := service.NewService(repo)
+	sessionCfg, err := config.LoadSession()
+	if err != nil {
+		return fmt.Errorf("failed to load session config: %w", err)
+	}
+
+	jwtCfg, err := config.LoadJwt()
+	if err != nil {
+		return fmt.Errorf("failed to load jwt config: %w", err)
+	}
+
+	repo := repository.NewRepository(a.db, sessionCfg)
+	service := service.NewService(repo, jwtCfg)
 
 	authHandler := api.NewAuthServiceHandler(service)
 	pb.RegisterAuthServiceServer(a.server, authHandler)
