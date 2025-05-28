@@ -91,9 +91,6 @@ func (a *App) Start(ctx context.Context) error {
 	authHandler := api.NewAuthServiceHandler(service)
 	pb.RegisterAuthServiceServer(a.server, authHandler)
 
-	accessHandler := api.NewAccessServiceHandler(service)
-	pb.RegisterAccessServiceServer(a.server, accessHandler)
-
 	reflection.Register(a.server)
 
 	go func() {

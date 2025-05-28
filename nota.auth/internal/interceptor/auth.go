@@ -2,8 +2,10 @@ package interceptor
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -12,7 +14,7 @@ import (
 
 type contextKey string
 
-const accessTokenKey contextKey = "accessToken"
+const userIDKey contextKey = "userID"
 
 func AuthUnaryServerInterceptor(
 	protectedSuffixes []string,
@@ -40,19 +42,25 @@ func AuthUnaryServerInterceptor(
 			return nil, status.Errorf(codes.Unauthenticated, "unauthorized")
 		}
 
-		accessTokenValues := md.Get("x-access-token")
-		if len(accessTokenValues) == 0 {
+		userIDValues := md.Get("x-user-id")
+		if len(userIDValues) == 0 {
 			return nil, status.Errorf(codes.Unauthenticated, "unauthorized")
 		}
-		accessTokenStr := accessTokenValues[0]
+		userIDStr := userIDValues[0]
 
-		ctx = context.WithValue(ctx, accessTokenKey, accessTokenStr)
+		userID, err := uuid.Parse(userIDStr)
+		fmt.Println(userID)
+		if err != nil {
+			return nil, status.Errorf(codes.Unauthenticated, "unauthorized")
+		}
+
+		ctx = context.WithValue(ctx, userIDKey, userID)
 
 		return handler(ctx, req)
 	}
 }
 
-func GetAccessTokenStr(ctx context.Context) string {
-	accessToken := ctx.Value(accessTokenKey).(string)
-	return accessToken
+func GetUserID(ctx context.Context) uuid.UUID {
+	userID := ctx.Value(userIDKey).(uuid.UUID)
+	return userID
 }

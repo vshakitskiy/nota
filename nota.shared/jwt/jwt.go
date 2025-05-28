@@ -3,11 +3,11 @@ package jwt
 import (
 	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"nota.shared/env"
 )
 
 var (
@@ -34,12 +34,9 @@ func CreateJWT(userID uuid.UUID, exp time.Duration) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	key, exists := os.LookupEnv("JWT_SECRET")
-	if !exists {
-		return "", errors.New("unable to find jwt secret key")
-	}
+	secret := env.GetJwtSecret()
 
-	str, err := token.SignedString([]byte(key))
+	str, err := token.SignedString([]byte(secret))
 	if err != nil {
 		return "", fmt.Errorf("error signing token: %w", err)
 	}
@@ -48,10 +45,7 @@ func CreateJWT(userID uuid.UUID, exp time.Duration) (string, error) {
 }
 
 func ValidateJWT(tokenStr string) (*NotaClaims, error) {
-	key, exists := os.LookupEnv("JWT_SECRET")
-	if !exists {
-		return nil, errors.New("unable to find jwt secret key")
-	}
+	secret := env.GetJwtSecret()
 
 	token, err := jwt.ParseWithClaims(
 		tokenStr,
@@ -61,7 +55,7 @@ func ValidateJWT(tokenStr string) (*NotaClaims, error) {
 				return nil, ErrInvalidToken
 			}
 
-			return []byte(key), nil
+			return []byte(secret), nil
 		},
 	)
 	if err != nil {

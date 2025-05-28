@@ -2,8 +2,11 @@ package middleware
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"strings"
+
+	"nota.shared/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +30,7 @@ func AuthMiddleware(protectedPrefixes []string) gin.HandlerFunc {
 
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "no authorization header provided"})
 			c.Abort()
 			return
 		}
@@ -42,8 +45,20 @@ func AuthMiddleware(protectedPrefixes []string) gin.HandlerFunc {
 		token := parts[1]
 		ctx := context.WithValue(c.Request.Context(), "accessToken", token)
 
-		userID := "dde009e4-aad0-4570-b40a-cb0caee2a1c1"
-		ctx = context.WithValue(ctx, "userID", userID)
+		claims, err := jwt.ValidateJWT(token)
+		if err != nil {
+			if errors.Is(err, jwt.ErrInvalidToken) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+			} else if errors.Is(err, jwt.ErrExpiredToken) {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "expired token"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"error": "something went wrong, try again later"})
+			}
+			c.Abort()
+			return
+		}
+
+		ctx = context.WithValue(ctx, "userID", claims.UserID.String())
 		c.Request = c.Request.WithContext(ctx)
 
 		c.Next()

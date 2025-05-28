@@ -11,8 +11,8 @@ import (
 	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
-	"nota.auth/pkg/jwt"
 	pb "nota.auth/pkg/pb/v1"
+	"nota.shared/jwt"
 	"nota.shared/telemetry"
 )
 
@@ -34,14 +34,8 @@ func (h *AuthServiceHandler) GetUser(
 	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.GetUser")
 	defer span.End()
 
-	// if req.AccessToken == "" {
-	// 	telemetry.RecordError(span, errors.New("access token is required"))
-	// 	return nil, status.Error(codes.InvalidArgument, "access token is required")
-	// }
-
-	accessToken := interceptor.GetAccessTokenStr(ctx)
-
-	user, err := h.service.Auth.GetUser(ctx, accessToken)
+	userID := interceptor.GetUserID(ctx)
+	user, err := h.service.Auth.GetUser(ctx, userID)
 	if err != nil {
 		telemetry.RecordError(span, err)
 
@@ -214,9 +208,9 @@ func (h *AuthServiceHandler) Logout(
 	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Logout")
 	defer span.End()
 
-	accessToken := interceptor.GetAccessTokenStr(ctx)
+	userID := interceptor.GetUserID(ctx)
 
-	err := h.service.Auth.Logout(ctx, accessToken)
+	err := h.service.Auth.Logout(ctx, userID)
 	if err != nil {
 		telemetry.RecordError(span, err)
 

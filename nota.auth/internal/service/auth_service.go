@@ -10,8 +10,8 @@ import (
 	"nota.auth/internal/repository"
 	"nota.auth/pkg/bcrypt"
 	"nota.auth/pkg/crypto"
-	"nota.auth/pkg/jwt"
 	"nota.shared/config"
+	"nota.shared/jwt"
 	"nota.shared/telemetry"
 )
 
@@ -30,8 +30,8 @@ type AuthService interface {
 	Register(ctx context.Context, username, email, password string) (*uuid.UUID, error)
 	Login(ctx context.Context, email, password string) (*TokenPair, error)
 	RefreshToken(ctx context.Context, refreshToken string) (string, error)
-	Logout(ctx context.Context, accessToken string) error
-	GetUser(ctx context.Context, accessToken string) (*model.User, error)
+	Logout(ctx context.Context, userID uuid.UUID) error
+	GetUser(ctx context.Context, userID uuid.UUID) (*model.User, error)
 }
 
 type AuthServiceImpl struct {
@@ -152,32 +152,20 @@ func (s *AuthServiceImpl) RefreshToken(
 
 func (s *AuthServiceImpl) Logout(
 	ctx context.Context,
-	accessToken string,
+	userID uuid.UUID,
 ) error {
 	ctx, span := telemetry.StartSpan(ctx, "AuthService.Logout")
 	defer span.End()
 
-	claims, err := jwt.ValidateJWT(accessToken)
-	if err != nil {
-		telemetry.RecordError(span, err)
-		return err
-	}
-
-	return s.repo.Session.DeleteByUserID(ctx, claims.UserID)
+	return s.repo.Session.DeleteByUserID(ctx, userID)
 }
 
 func (s *AuthServiceImpl) GetUser(
 	ctx context.Context,
-	accessToken string,
+	userID uuid.UUID,
 ) (*model.User, error) {
 	ctx, span := telemetry.StartSpan(ctx, "AuthService.GetUser")
 	defer span.End()
 
-	claims, err := jwt.ValidateJWT(accessToken)
-	if err != nil {
-		telemetry.RecordError(span, err)
-		return nil, err
-	}
-
-	return s.repo.User.GetById(ctx, claims.UserID)
+	return s.repo.User.GetById(ctx, userID)
 }

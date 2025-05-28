@@ -7,9 +7,6 @@
   "tags": [
     {
       "name": "AuthService"
-    },
-    {
-      "name": "AccessService"
     }
   ],
   "consumes": [
@@ -19,38 +16,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/v1/auth/check": {
-      "post": {
-        "operationId": "AccessService_ValidateToken",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/auth_v1ValidateTokenResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/auth_v1ValidateTokenRequest"
-            }
-          }
-        ],
-        "tags": [
-          "AccessService"
-        ]
-      }
-    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "AuthService_Login",
@@ -276,17 +241,6 @@
       }
     },
     "auth_v1RegisterResponse": {
-      "type": "object",
-      "properties": {
-        "userId": {
-          "type": "string"
-        }
-      }
-    },
-    "auth_v1ValidateTokenRequest": {
-      "type": "object"
-    },
-    "auth_v1ValidateTokenResponse": {
       "type": "object",
       "properties": {
         "userId": {
