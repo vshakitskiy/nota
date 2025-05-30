@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package snippet.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "nota.snippet/pkg/pb/v1;snippetpb";
+
+service SnippetService {
+  rpc CreateSnippet(CreateSnippetRequest) returns (CreateSnippetResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/snippets"
+      body: "*"
+    };
+  }
+
+  rpc GetSnippet(GetSnippetRequest) returns (GetSnippetResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/snippets/{id}"
+    };
+  }
+
+  rpc ListMySnippets(ListMySnippetsRequest) returns (ListMySnippetsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/me/snippets"
+    };
+  }
+
+  rpc ListPublicSnippets(ListPublicSnippetsRequest) returns (ListPublicSnippetsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/snippets"
+    };
+  }
+
+  rpc UpdateSnippet(UpdateSnippetRequest) returns (UpdateSnippetResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/snippets/{id}"
+      body: "*"
+    };
+  }
+
+  rpc DeleteSnippet(DeleteSnippetRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/api/v1/snippets/{id}"
+    };  
+  }
+}
+
+message Snippet {
+  string id = 1;
+  string user_id = 2;
+  string title = 3;
+  string content = 4;
+  string language_hint = 5;
+  string visibility = 6;
+  repeated string tags = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message PaginationRequest {
+  int32 page_number = 1;
+  int32 page_size = 2;
+}
+
+message PaginationResponse {
+  int32 current_page = 1;
+  int32 page_size = 2;
+  int32 total_items = 3;
+  int32 total_pages = 4;
+}
+
+message CreateSnippetRequest {
+  string title = 1;
+  string content = 2;
+  optional string language_hint = 3;
+  optional string visibility = 4;
+  repeated string tags = 5;
+}
+
+message CreateSnippetResponse {
+  string id = 1;
+}
+
+message GetSnippetRequest {
+  string id = 1;
+}
+
+message GetSnippetResponse {
+  Snippet snippet = 1;
+}
+
+message ListMySnippetsRequest {
+  PaginationRequest pagination = 1;
+}
+
+message ListMySnippetsResponse {
+  repeated Snippet snippets = 1;
+  PaginationResponse pagination = 2;
+}
+
+message ListPublicSnippetsRequest {
+  PaginationRequest pagination = 1;
+  optional string owner_id = 2;
+}
+
+message ListPublicSnippetsResponse {
+  repeated Snippet snippets = 1;
+  PaginationResponse pagination = 2;
+}
+
+message UpdateSnippetRequest {
+  string id = 1;
+  optional string title = 2;
+  optional string content = 3;
+  optional string language_hint = 4;
+  optional string visibility = 5;
+  repeated string tags = 6;
+}
+
+message UpdateSnippetResponse {
+  Snippet snippet = 1;
+}
+
+message DeleteSnippetRequest {
+  string id = 1;
+}

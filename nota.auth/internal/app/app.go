@@ -17,7 +17,7 @@ import (
 	"nota.auth/internal/metric"
 	"nota.auth/internal/repository"
 	"nota.auth/internal/service"
-	pb "nota.auth/pkg/pb/v1"
+	authpb "nota.auth/pkg/pb/v1"
 	"nota.shared/config"
 	"nota.shared/env"
 	"nota.shared/telemetry"
@@ -89,7 +89,7 @@ func (a *App) Start(ctx context.Context) error {
 	service := service.NewService(repo, jwtCfg)
 
 	authHandler := api.NewAuthServiceHandler(service)
-	pb.RegisterAuthServiceServer(a.server, authHandler)
+	authpb.RegisterAuthServiceServer(a.server, authHandler)
 
 	reflection.Register(a.server)
 

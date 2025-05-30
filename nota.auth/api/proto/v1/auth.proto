@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package auth_v1;
+package auth.v1;
 
 import "google/api/annotations.proto";
 
-option go_package = "nota/pkg/pb/auth/v1;auth_v1";
+option go_package = "nota.auth/pkg/pb/auth/v1;authpb";
 
 service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse) {

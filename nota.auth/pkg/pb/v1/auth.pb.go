@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: v1/auth.proto
 
-package auth_v1
+package authpb
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -490,7 +490,7 @@ var File_v1_auth_proto protoreflect.FileDescriptor
 
 const file_v1_auth_proto_rawDesc = "" +
 	"\n" +
-	"\rv1/auth.proto\x12\aauth_v1\x1a\x1cgoogle/api/annotations.proto\"_\n" +
+	"\rv1/auth.proto\x12\aauth.v1\x1a\x1cgoogle/api/annotations.proto\"_\n" +
 	"\x0fRegisterRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -515,11 +515,11 @@ const file_v1_auth_proto_rawDesc = "" +
 	"\busername\x18\x02 \x01(\tR\busername\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email2\xe7\x03\n" +
 	"\vAuthService\x12a\n" +
-	"\bRegister\x12\x18.auth_v1.RegisterRequest\x1a\x19.auth_v1.RegisterResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/register\x12U\n" +
-	"\x05Login\x12\x15.auth_v1.LoginRequest\x1a\x16.auth_v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12Y\n" +
-	"\x06Logout\x12\x16.auth_v1.LogoutRequest\x1a\x17.auth_v1.LogoutResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/auth/logout\x12l\n" +
-	"\fRefreshToken\x12\x1c.auth_v1.RefreshTokenRequest\x1a\x1d.auth_v1.RefreshTokenResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/auth/refresh\x12U\n" +
-	"\aGetUser\x12\x17.auth_v1.GetUserRequest\x1a\x18.auth_v1.GetUserResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/auth/meB\x1dZ\x1bnota/pkg/pb/auth/v1;auth_v1b\x06proto3"
+	"\bRegister\x12\x18.auth.v1.RegisterRequest\x1a\x19.auth.v1.RegisterResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/register\x12U\n" +
+	"\x05Login\x12\x15.auth.v1.LoginRequest\x1a\x16.auth.v1.LoginResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/api/v1/auth/login\x12Y\n" +
+	"\x06Logout\x12\x16.auth.v1.LogoutRequest\x1a\x17.auth.v1.LogoutResponse\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/api/v1/auth/logout\x12l\n" +
+	"\fRefreshToken\x12\x1c.auth.v1.RefreshTokenRequest\x1a\x1d.auth.v1.RefreshTokenResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/auth/refresh\x12U\n" +
+	"\aGetUser\x12\x17.auth.v1.GetUserRequest\x1a\x18.auth.v1.GetUserResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/api/v1/auth/meB!Z\x1fnota.auth/pkg/pb/auth/v1;authpbb\x06proto3"
 
 var (
 	file_v1_auth_proto_rawDescOnce sync.Once
@@ -535,28 +535,28 @@ func file_v1_auth_proto_rawDescGZIP() []byte {
 
 var file_v1_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_v1_auth_proto_goTypes = []any{
-	(*RegisterRequest)(nil),      // 0: auth_v1.RegisterRequest
-	(*RegisterResponse)(nil),     // 1: auth_v1.RegisterResponse
-	(*LoginRequest)(nil),         // 2: auth_v1.LoginRequest
-	(*LoginResponse)(nil),        // 3: auth_v1.LoginResponse
-	(*LogoutRequest)(nil),        // 4: auth_v1.LogoutRequest
-	(*LogoutResponse)(nil),       // 5: auth_v1.LogoutResponse
-	(*RefreshTokenRequest)(nil),  // 6: auth_v1.RefreshTokenRequest
-	(*RefreshTokenResponse)(nil), // 7: auth_v1.RefreshTokenResponse
-	(*GetUserRequest)(nil),       // 8: auth_v1.GetUserRequest
-	(*GetUserResponse)(nil),      // 9: auth_v1.GetUserResponse
+	(*RegisterRequest)(nil),      // 0: auth.v1.RegisterRequest
+	(*RegisterResponse)(nil),     // 1: auth.v1.RegisterResponse
+	(*LoginRequest)(nil),         // 2: auth.v1.LoginRequest
+	(*LoginResponse)(nil),        // 3: auth.v1.LoginResponse
+	(*LogoutRequest)(nil),        // 4: auth.v1.LogoutRequest
+	(*LogoutResponse)(nil),       // 5: auth.v1.LogoutResponse
+	(*RefreshTokenRequest)(nil),  // 6: auth.v1.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil), // 7: auth.v1.RefreshTokenResponse
+	(*GetUserRequest)(nil),       // 8: auth.v1.GetUserRequest
+	(*GetUserResponse)(nil),      // 9: auth.v1.GetUserResponse
 }
 var file_v1_auth_proto_depIdxs = []int32{
-	0, // 0: auth_v1.AuthService.Register:input_type -> auth_v1.RegisterRequest
-	2, // 1: auth_v1.AuthService.Login:input_type -> auth_v1.LoginRequest
-	4, // 2: auth_v1.AuthService.Logout:input_type -> auth_v1.LogoutRequest
-	6, // 3: auth_v1.AuthService.RefreshToken:input_type -> auth_v1.RefreshTokenRequest
-	8, // 4: auth_v1.AuthService.GetUser:input_type -> auth_v1.GetUserRequest
-	1, // 5: auth_v1.AuthService.Register:output_type -> auth_v1.RegisterResponse
-	3, // 6: auth_v1.AuthService.Login:output_type -> auth_v1.LoginResponse
-	5, // 7: auth_v1.AuthService.Logout:output_type -> auth_v1.LogoutResponse
-	7, // 8: auth_v1.AuthService.RefreshToken:output_type -> auth_v1.RefreshTokenResponse
-	9, // 9: auth_v1.AuthService.GetUser:output_type -> auth_v1.GetUserResponse
+	0, // 0: auth.v1.AuthService.Register:input_type -> auth.v1.RegisterRequest
+	2, // 1: auth.v1.AuthService.Login:input_type -> auth.v1.LoginRequest
+	4, // 2: auth.v1.AuthService.Logout:input_type -> auth.v1.LogoutRequest
+	6, // 3: auth.v1.AuthService.RefreshToken:input_type -> auth.v1.RefreshTokenRequest
+	8, // 4: auth.v1.AuthService.GetUser:input_type -> auth.v1.GetUserRequest
+	1, // 5: auth.v1.AuthService.Register:output_type -> auth.v1.RegisterResponse
+	3, // 6: auth.v1.AuthService.Login:output_type -> auth.v1.LoginResponse
+	5, // 7: auth.v1.AuthService.Logout:output_type -> auth.v1.LogoutResponse
+	7, // 8: auth.v1.AuthService.RefreshToken:output_type -> auth.v1.RefreshTokenResponse
+	9, // 9: auth.v1.AuthService.GetUser:output_type -> auth.v1.GetUserResponse
 	5, // [5:10] is the sub-list for method output_type
 	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
