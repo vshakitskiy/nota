@@ -4,22 +4,30 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	sharedModel "nota.shared/model"
+	"nota.shared/interceptor"
+	"nota.shared/pagination"
 	"nota.snippet/internal/model"
 	"nota.snippet/internal/repository"
 )
 
 type SnippetService interface {
-	Create(ctx context.Context, snippet *model.Snippet) (*uuid.UUID, error)
-	List(ctx context.Context, pagination sharedModel.Pagination) ([]*model.Snippet, error)
-	GetByID(
+	Create(
+		ctx context.Context,
+		title string,
+		content string,
+		languageHint string,
+		isPublic bool,
+		tags []string,
+	) (*uuid.UUID, error)
+	GetSnippet(
 		ctx context.Context,
 		id uuid.UUID,
-		pagination sharedModel.Pagination,
 	) (*model.Snippet, error)
-	GetByOwnerID(
+	List(ctx context.Context, pagination pagination.Pagination) ([]*model.Snippet, error)
+	ListByOwnerID(
 		ctx context.Context,
-		ownerID uuid.UUID, pagination sharedModel.Pagination) ([]*model.Snippet, error)
+		pagination pagination.Pagination,
+	) ([]*model.Snippet, int64, error)
 	Update(ctx context.Context, id uuid.UUID, snippet *model.Snippet) error
 	Delete(ctx context.Context, id uuid.UUID) error
 }
@@ -34,32 +42,62 @@ func NewSnippetService(repo *repository.Repository) *snippetService {
 
 func (s *snippetService) Create(
 	ctx context.Context,
-	snippet *model.Snippet,
+	title string,
+	content string,
+	languageHint string,
+	isPublic bool,
+	tags []string,
 ) (*uuid.UUID, error) {
-	panic("not implemented")
+	userID := interceptor.GetUserID(ctx)
+
+	snippet := &model.Snippet{
+		OwnerID:      userID,
+		Title:        title,
+		Content:      content,
+		LanguageHint: languageHint,
+		IsPublic:     isPublic,
+		Tags:         tags,
+	}
+
+	id, err := s.repo.Snippet.Create(ctx, snippet)
+	if err != nil {
+		return nil, err
+	}
+
+	return id, nil
+}
+
+func (s *snippetService) GetSnippet(
+	ctx context.Context,
+	id uuid.UUID,
+) (*model.Snippet, error) {
+	snippet, err := s.repo.Snippet.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return snippet, nil
 }
 
 func (s *snippetService) List(
 	ctx context.Context,
-	pagination sharedModel.Pagination,
+	pagination pagination.Pagination,
 ) ([]*model.Snippet, error) {
 	panic("not implemented")
 }
 
-func (s *snippetService) GetByID(
+func (s *snippetService) ListByOwnerID(
 	ctx context.Context,
-	id uuid.UUID,
-	pagination sharedModel.Pagination,
-) (*model.Snippet, error) {
-	panic("not implemented")
-}
+	pagination pagination.Pagination,
+) ([]*model.Snippet, int64, error) {
+	userID := interceptor.GetUserID(ctx)
 
-func (s *snippetService) GetByOwnerID(
-	ctx context.Context,
-	ownerID uuid.UUID,
-	pagination sharedModel.Pagination,
-) ([]*model.Snippet, error) {
-	panic("not implemented")
+	snippets, total, err := s.repo.Snippet.ListByOwnerID(ctx, userID, pagination)
+	if err != nil {
+		return nil, total, err
+	}
+
+	return snippets, total, nil
 }
 
 func (s *snippetService) Update(

@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 	"nota.shared/config"
 	"nota.shared/env"
+	"nota.shared/interceptor"
 	"nota.shared/telemetry"
 	"nota.snippet/internal/api"
 	"nota.snippet/internal/repository"
@@ -61,14 +62,13 @@ func (a *App) Start(ctx context.Context) error {
 	// metric.Init()
 
 	statsHandler, customInterceptor := telemetry.NewGRPCServerHandlers()
-
-	// authInterceptor := interceptor.AuthUnaryServerInterceptor(a.cfg.ProtectedRPC)
+	authInterceptor := interceptor.AuthUnaryServerInterceptor()
 
 	a.server = grpc.NewServer(
 		statsHandler,
 		grpc.ChainUnaryInterceptor(
 			customInterceptor,
-			// authInterceptor,
+			authInterceptor,
 		),
 	)
 

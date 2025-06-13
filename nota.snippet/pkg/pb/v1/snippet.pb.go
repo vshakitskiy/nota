@@ -31,7 +31,7 @@ type Snippet struct {
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
 	LanguageHint  string                 `protobuf:"bytes,5,opt,name=language_hint,json=languageHint,proto3" json:"language_hint,omitempty"`
-	Visibility    string                 `protobuf:"bytes,6,opt,name=visibility,proto3" json:"visibility,omitempty"`
+	IsPublic      bool                   `protobuf:"varint,6,opt,name=is_public,json=isPublic,proto3" json:"is_public,omitempty"`
 	Tags          []string               `protobuf:"bytes,7,rep,name=tags,proto3" json:"tags,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
@@ -104,11 +104,11 @@ func (x *Snippet) GetLanguageHint() string {
 	return ""
 }
 
-func (x *Snippet) GetVisibility() string {
+func (x *Snippet) GetIsPublic() bool {
 	if x != nil {
-		return x.Visibility
+		return x.IsPublic
 	}
-	return ""
+	return false
 }
 
 func (x *Snippet) GetTags() []string {
@@ -134,9 +134,9 @@ func (x *Snippet) GetUpdatedAt() *timestamppb.Timestamp {
 
 type PaginationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	CurrentPage   int32                  `protobuf:"varint,1,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	TotalItems    int32                  `protobuf:"varint,3,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`
+	Size          int32                  `protobuf:"varint,1,opt,name=size,proto3" json:"size,omitempty"`
+	TotalItems    int32                  `protobuf:"varint,2,opt,name=total_items,json=totalItems,proto3" json:"total_items,omitempty"`
+	CurrentPage   int32                  `protobuf:"varint,3,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
 	TotalPages    int32                  `protobuf:"varint,4,opt,name=total_pages,json=totalPages,proto3" json:"total_pages,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -172,16 +172,9 @@ func (*PaginationResponse) Descriptor() ([]byte, []int) {
 	return file_v1_snippet_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *PaginationResponse) GetCurrentPage() int32 {
+func (x *PaginationResponse) GetSize() int32 {
 	if x != nil {
-		return x.CurrentPage
-	}
-	return 0
-}
-
-func (x *PaginationResponse) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
+		return x.Size
 	}
 	return 0
 }
@@ -189,6 +182,13 @@ func (x *PaginationResponse) GetPageSize() int32 {
 func (x *PaginationResponse) GetTotalItems() int32 {
 	if x != nil {
 		return x.TotalItems
+	}
+	return 0
+}
+
+func (x *PaginationResponse) GetCurrentPage() int32 {
+	if x != nil {
+		return x.CurrentPage
 	}
 	return 0
 }
@@ -205,7 +205,7 @@ type CreateSnippetRequest struct {
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,2,opt,name=content,proto3" json:"content,omitempty"`
 	LanguageHint  *string                `protobuf:"bytes,3,opt,name=language_hint,json=languageHint,proto3,oneof" json:"language_hint,omitempty"`
-	Visibility    *string                `protobuf:"bytes,4,opt,name=visibility,proto3,oneof" json:"visibility,omitempty"`
+	IsPublic      *bool                  `protobuf:"varint,4,opt,name=is_public,json=isPublic,proto3,oneof" json:"is_public,omitempty"`
 	Tags          []string               `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -262,11 +262,11 @@ func (x *CreateSnippetRequest) GetLanguageHint() string {
 	return ""
 }
 
-func (x *CreateSnippetRequest) GetVisibility() string {
-	if x != nil && x.Visibility != nil {
-		return *x.Visibility
+func (x *CreateSnippetRequest) GetIsPublic() bool {
+	if x != nil && x.IsPublic != nil {
+		return *x.IsPublic
 	}
-	return ""
+	return false
 }
 
 func (x *CreateSnippetRequest) GetTags() []string {
@@ -410,8 +410,8 @@ func (x *GetSnippetResponse) GetSnippet() *Snippet {
 
 type ListMySnippetsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageNumber    *int32                 `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3,oneof" json:"page_number,omitempty"`
-	PageSize      *int32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	Page          *int32                 `protobuf:"varint,1,opt,name=page,proto3,oneof" json:"page,omitempty"`
+	Size          *int32                 `protobuf:"varint,2,opt,name=size,proto3,oneof" json:"size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -446,16 +446,16 @@ func (*ListMySnippetsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_snippet_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ListMySnippetsRequest) GetPageNumber() int32 {
-	if x != nil && x.PageNumber != nil {
-		return *x.PageNumber
+func (x *ListMySnippetsRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
 	}
 	return 0
 }
 
-func (x *ListMySnippetsRequest) GetPageSize() int32 {
-	if x != nil && x.PageSize != nil {
-		return *x.PageSize
+func (x *ListMySnippetsRequest) GetSize() int32 {
+	if x != nil && x.Size != nil {
+		return *x.Size
 	}
 	return 0
 }
@@ -514,8 +514,8 @@ func (x *ListMySnippetsResponse) GetPagination() *PaginationResponse {
 
 type ListPublicSnippetsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageNumber    *int32                 `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3,oneof" json:"page_number,omitempty"`
-	PageSize      *int32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	Page          *int32                 `protobuf:"varint,1,opt,name=page,proto3,oneof" json:"page,omitempty"`
+	Size          *int32                 `protobuf:"varint,2,opt,name=size,proto3,oneof" json:"size,omitempty"`
 	OwnerId       *string                `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3,oneof" json:"owner_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -551,16 +551,16 @@ func (*ListPublicSnippetsRequest) Descriptor() ([]byte, []int) {
 	return file_v1_snippet_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *ListPublicSnippetsRequest) GetPageNumber() int32 {
-	if x != nil && x.PageNumber != nil {
-		return *x.PageNumber
+func (x *ListPublicSnippetsRequest) GetPage() int32 {
+	if x != nil && x.Page != nil {
+		return *x.Page
 	}
 	return 0
 }
 
-func (x *ListPublicSnippetsRequest) GetPageSize() int32 {
-	if x != nil && x.PageSize != nil {
-		return *x.PageSize
+func (x *ListPublicSnippetsRequest) GetSize() int32 {
+	if x != nil && x.Size != nil {
+		return *x.Size
 	}
 	return 0
 }
@@ -630,7 +630,7 @@ type UpdateSnippetRequest struct {
 	Title         *string                `protobuf:"bytes,2,opt,name=title,proto3,oneof" json:"title,omitempty"`
 	Content       *string                `protobuf:"bytes,3,opt,name=content,proto3,oneof" json:"content,omitempty"`
 	LanguageHint  *string                `protobuf:"bytes,4,opt,name=language_hint,json=languageHint,proto3,oneof" json:"language_hint,omitempty"`
-	Visibility    *string                `protobuf:"bytes,5,opt,name=visibility,proto3,oneof" json:"visibility,omitempty"`
+	IsPublic      *bool                  `protobuf:"varint,5,opt,name=is_public,json=isPublic,proto3,oneof" json:"is_public,omitempty"`
 	Tags          []string               `protobuf:"bytes,6,rep,name=tags,proto3" json:"tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -694,11 +694,11 @@ func (x *UpdateSnippetRequest) GetLanguageHint() string {
 	return ""
 }
 
-func (x *UpdateSnippetRequest) GetVisibility() string {
-	if x != nil && x.Visibility != nil {
-		return *x.Visibility
+func (x *UpdateSnippetRequest) GetIsPublic() bool {
+	if x != nil && x.IsPublic != nil {
+		return *x.IsPublic
 	}
-	return ""
+	return false
 }
 
 func (x *UpdateSnippetRequest) GetTags() []string {
@@ -801,84 +801,76 @@ var File_v1_snippet_proto protoreflect.FileDescriptor
 const file_v1_snippet_proto_rawDesc = "" +
 	"\n" +
 	"\x10v1/snippet.proto\x12\n" +
-	"snippet.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"\xb1\x02\n" +
+	"snippet.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\"\xae\x02\n" +
 	"\aSnippet\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12#\n" +
-	"\rlanguage_hint\x18\x05 \x01(\tR\flanguageHint\x12\x1e\n" +
-	"\n" +
-	"visibility\x18\x06 \x01(\tR\n" +
-	"visibility\x12\x12\n" +
+	"\rlanguage_hint\x18\x05 \x01(\tR\flanguageHint\x12\x1b\n" +
+	"\tis_public\x18\x06 \x01(\bR\bisPublic\x12\x12\n" +
 	"\x04tags\x18\a \x03(\tR\x04tags\x129\n" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x96\x01\n" +
-	"\x12PaginationResponse\x12!\n" +
-	"\fcurrent_page\x18\x01 \x01(\x05R\vcurrentPage\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1f\n" +
-	"\vtotal_items\x18\x03 \x01(\x05R\n" +
-	"totalItems\x12\x1f\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8d\x01\n" +
+	"\x12PaginationResponse\x12\x12\n" +
+	"\x04size\x18\x01 \x01(\x05R\x04size\x12\x1f\n" +
+	"\vtotal_items\x18\x02 \x01(\x05R\n" +
+	"totalItems\x12!\n" +
+	"\fcurrent_page\x18\x03 \x01(\x05R\vcurrentPage\x12\x1f\n" +
 	"\vtotal_pages\x18\x04 \x01(\x05R\n" +
-	"totalPages\"\xca\x01\n" +
+	"totalPages\"\xc6\x01\n" +
 	"\x14CreateSnippetRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12(\n" +
-	"\rlanguage_hint\x18\x03 \x01(\tH\x00R\flanguageHint\x88\x01\x01\x12#\n" +
-	"\n" +
-	"visibility\x18\x04 \x01(\tH\x01R\n" +
-	"visibility\x88\x01\x01\x12\x12\n" +
+	"\rlanguage_hint\x18\x03 \x01(\tH\x00R\flanguageHint\x88\x01\x01\x12 \n" +
+	"\tis_public\x18\x04 \x01(\bH\x01R\bisPublic\x88\x01\x01\x12\x12\n" +
 	"\x04tags\x18\x05 \x03(\tR\x04tagsB\x10\n" +
-	"\x0e_language_hintB\r\n" +
-	"\v_visibility\"'\n" +
+	"\x0e_language_hintB\f\n" +
+	"\n" +
+	"_is_public\"'\n" +
 	"\x15CreateSnippetResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"#\n" +
 	"\x11GetSnippetRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"C\n" +
 	"\x12GetSnippetResponse\x12-\n" +
-	"\asnippet\x18\x01 \x01(\v2\x13.snippet.v1.SnippetR\asnippet\"}\n" +
-	"\x15ListMySnippetsRequest\x12$\n" +
-	"\vpage_number\x18\x01 \x01(\x05H\x00R\n" +
-	"pageNumber\x88\x01\x01\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05H\x01R\bpageSize\x88\x01\x01B\x0e\n" +
-	"\f_page_numberB\f\n" +
-	"\n" +
-	"_page_size\"\x89\x01\n" +
+	"\asnippet\x18\x01 \x01(\v2\x13.snippet.v1.SnippetR\asnippet\"[\n" +
+	"\x15ListMySnippetsRequest\x12\x17\n" +
+	"\x04page\x18\x01 \x01(\x05H\x00R\x04page\x88\x01\x01\x12\x17\n" +
+	"\x04size\x18\x02 \x01(\x05H\x01R\x04size\x88\x01\x01B\a\n" +
+	"\x05_pageB\a\n" +
+	"\x05_size\"\x89\x01\n" +
 	"\x16ListMySnippetsResponse\x12/\n" +
 	"\bsnippets\x18\x01 \x03(\v2\x13.snippet.v1.SnippetR\bsnippets\x12>\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x1e.snippet.v1.PaginationResponseR\n" +
-	"pagination\"\xae\x01\n" +
-	"\x19ListPublicSnippetsRequest\x12$\n" +
-	"\vpage_number\x18\x01 \x01(\x05H\x00R\n" +
-	"pageNumber\x88\x01\x01\x12 \n" +
-	"\tpage_size\x18\x02 \x01(\x05H\x01R\bpageSize\x88\x01\x01\x12\x1e\n" +
-	"\bowner_id\x18\x03 \x01(\tH\x02R\aownerId\x88\x01\x01B\x0e\n" +
-	"\f_page_numberB\f\n" +
-	"\n" +
-	"_page_sizeB\v\n" +
+	"pagination\"\x8c\x01\n" +
+	"\x19ListPublicSnippetsRequest\x12\x17\n" +
+	"\x04page\x18\x01 \x01(\x05H\x00R\x04page\x88\x01\x01\x12\x17\n" +
+	"\x04size\x18\x02 \x01(\x05H\x01R\x04size\x88\x01\x01\x12\x1e\n" +
+	"\bowner_id\x18\x03 \x01(\tH\x02R\aownerId\x88\x01\x01B\a\n" +
+	"\x05_pageB\a\n" +
+	"\x05_sizeB\v\n" +
 	"\t_owner_id\"\x8d\x01\n" +
 	"\x1aListPublicSnippetsResponse\x12/\n" +
 	"\bsnippets\x18\x01 \x03(\v2\x13.snippet.v1.SnippetR\bsnippets\x12>\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x1e.snippet.v1.PaginationResponseR\n" +
-	"pagination\"\xfa\x01\n" +
+	"pagination\"\xf6\x01\n" +
 	"\x14UpdateSnippetRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tH\x00R\x05title\x88\x01\x01\x12\x1d\n" +
 	"\acontent\x18\x03 \x01(\tH\x01R\acontent\x88\x01\x01\x12(\n" +
-	"\rlanguage_hint\x18\x04 \x01(\tH\x02R\flanguageHint\x88\x01\x01\x12#\n" +
-	"\n" +
-	"visibility\x18\x05 \x01(\tH\x03R\n" +
-	"visibility\x88\x01\x01\x12\x12\n" +
+	"\rlanguage_hint\x18\x04 \x01(\tH\x02R\flanguageHint\x88\x01\x01\x12 \n" +
+	"\tis_public\x18\x05 \x01(\bH\x03R\bisPublic\x88\x01\x01\x12\x12\n" +
 	"\x04tags\x18\x06 \x03(\tR\x04tagsB\b\n" +
 	"\x06_titleB\n" +
 	"\n" +
 	"\b_contentB\x10\n" +
-	"\x0e_language_hintB\r\n" +
-	"\v_visibility\"F\n" +
+	"\x0e_language_hintB\f\n" +
+	"\n" +
+	"_is_public\"F\n" +
 	"\x15UpdateSnippetResponse\x12-\n" +
 	"\asnippet\x18\x01 \x01(\v2\x13.snippet.v1.SnippetR\asnippet\"&\n" +
 	"\x14DeleteSnippetRequest\x12\x0e\n" +
