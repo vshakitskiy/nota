@@ -56,9 +56,15 @@ func ErrorHandler(
 	w.WriteHeader(statusCode)
 	w.Header().Set("Content-Type", "application/json")
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"error": s.Message(),
-	})
+	if statusCode == http.StatusServiceUnavailable {
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "service unavailable",
+		})
+	} else {
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": s.Message(),
+		})
+	}
 }
 
 func RoutingErrorHandler(

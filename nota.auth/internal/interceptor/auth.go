@@ -2,7 +2,6 @@ package interceptor
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/google/uuid"
@@ -49,7 +48,6 @@ func AuthUnaryServerInterceptor(
 		userIDStr := userIDValues[0]
 
 		userID, err := uuid.Parse(userIDStr)
-		fmt.Println(userID)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, "unauthorized")
 		}

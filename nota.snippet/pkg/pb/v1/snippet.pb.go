@@ -132,58 +132,6 @@ func (x *Snippet) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-type PaginationRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	PageNumber    int32                  `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3" json:"page_number,omitempty"`
-	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PaginationRequest) Reset() {
-	*x = PaginationRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PaginationRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PaginationRequest) ProtoMessage() {}
-
-func (x *PaginationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PaginationRequest.ProtoReflect.Descriptor instead.
-func (*PaginationRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *PaginationRequest) GetPageNumber() int32 {
-	if x != nil {
-		return x.PageNumber
-	}
-	return 0
-}
-
-func (x *PaginationRequest) GetPageSize() int32 {
-	if x != nil {
-		return x.PageSize
-	}
-	return 0
-}
-
 type PaginationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CurrentPage   int32                  `protobuf:"varint,1,opt,name=current_page,json=currentPage,proto3" json:"current_page,omitempty"`
@@ -196,7 +144,7 @@ type PaginationResponse struct {
 
 func (x *PaginationResponse) Reset() {
 	*x = PaginationResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[2]
+	mi := &file_v1_snippet_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -208,7 +156,7 @@ func (x *PaginationResponse) String() string {
 func (*PaginationResponse) ProtoMessage() {}
 
 func (x *PaginationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[2]
+	mi := &file_v1_snippet_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -221,7 +169,7 @@ func (x *PaginationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PaginationResponse.ProtoReflect.Descriptor instead.
 func (*PaginationResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{2}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PaginationResponse) GetCurrentPage() int32 {
@@ -265,7 +213,7 @@ type CreateSnippetRequest struct {
 
 func (x *CreateSnippetRequest) Reset() {
 	*x = CreateSnippetRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[3]
+	mi := &file_v1_snippet_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -277,7 +225,7 @@ func (x *CreateSnippetRequest) String() string {
 func (*CreateSnippetRequest) ProtoMessage() {}
 
 func (x *CreateSnippetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[3]
+	mi := &file_v1_snippet_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -290,7 +238,7 @@ func (x *CreateSnippetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSnippetRequest.ProtoReflect.Descriptor instead.
 func (*CreateSnippetRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{3}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateSnippetRequest) GetTitle() string {
@@ -337,7 +285,7 @@ type CreateSnippetResponse struct {
 
 func (x *CreateSnippetResponse) Reset() {
 	*x = CreateSnippetResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[4]
+	mi := &file_v1_snippet_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -349,7 +297,7 @@ func (x *CreateSnippetResponse) String() string {
 func (*CreateSnippetResponse) ProtoMessage() {}
 
 func (x *CreateSnippetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[4]
+	mi := &file_v1_snippet_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -362,7 +310,7 @@ func (x *CreateSnippetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSnippetResponse.ProtoReflect.Descriptor instead.
 func (*CreateSnippetResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{4}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateSnippetResponse) GetId() string {
@@ -381,7 +329,7 @@ type GetSnippetRequest struct {
 
 func (x *GetSnippetRequest) Reset() {
 	*x = GetSnippetRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[5]
+	mi := &file_v1_snippet_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -393,7 +341,7 @@ func (x *GetSnippetRequest) String() string {
 func (*GetSnippetRequest) ProtoMessage() {}
 
 func (x *GetSnippetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[5]
+	mi := &file_v1_snippet_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -406,7 +354,7 @@ func (x *GetSnippetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSnippetRequest.ProtoReflect.Descriptor instead.
 func (*GetSnippetRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{5}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetSnippetRequest) GetId() string {
@@ -425,7 +373,7 @@ type GetSnippetResponse struct {
 
 func (x *GetSnippetResponse) Reset() {
 	*x = GetSnippetResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[6]
+	mi := &file_v1_snippet_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -437,7 +385,7 @@ func (x *GetSnippetResponse) String() string {
 func (*GetSnippetResponse) ProtoMessage() {}
 
 func (x *GetSnippetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[6]
+	mi := &file_v1_snippet_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -450,7 +398,7 @@ func (x *GetSnippetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSnippetResponse.ProtoReflect.Descriptor instead.
 func (*GetSnippetResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{6}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetSnippetResponse) GetSnippet() *Snippet {
@@ -462,14 +410,15 @@ func (x *GetSnippetResponse) GetSnippet() *Snippet {
 
 type ListMySnippetsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Pagination    *PaginationRequest     `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	PageNumber    *int32                 `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3,oneof" json:"page_number,omitempty"`
+	PageSize      *int32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListMySnippetsRequest) Reset() {
 	*x = ListMySnippetsRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[7]
+	mi := &file_v1_snippet_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -481,7 +430,7 @@ func (x *ListMySnippetsRequest) String() string {
 func (*ListMySnippetsRequest) ProtoMessage() {}
 
 func (x *ListMySnippetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[7]
+	mi := &file_v1_snippet_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -494,14 +443,21 @@ func (x *ListMySnippetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMySnippetsRequest.ProtoReflect.Descriptor instead.
 func (*ListMySnippetsRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{7}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ListMySnippetsRequest) GetPagination() *PaginationRequest {
-	if x != nil {
-		return x.Pagination
+func (x *ListMySnippetsRequest) GetPageNumber() int32 {
+	if x != nil && x.PageNumber != nil {
+		return *x.PageNumber
 	}
-	return nil
+	return 0
+}
+
+func (x *ListMySnippetsRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
 }
 
 type ListMySnippetsResponse struct {
@@ -514,7 +470,7 @@ type ListMySnippetsResponse struct {
 
 func (x *ListMySnippetsResponse) Reset() {
 	*x = ListMySnippetsResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[8]
+	mi := &file_v1_snippet_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -526,7 +482,7 @@ func (x *ListMySnippetsResponse) String() string {
 func (*ListMySnippetsResponse) ProtoMessage() {}
 
 func (x *ListMySnippetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[8]
+	mi := &file_v1_snippet_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -539,7 +495,7 @@ func (x *ListMySnippetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMySnippetsResponse.ProtoReflect.Descriptor instead.
 func (*ListMySnippetsResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{8}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListMySnippetsResponse) GetSnippets() []*Snippet {
@@ -558,15 +514,16 @@ func (x *ListMySnippetsResponse) GetPagination() *PaginationResponse {
 
 type ListPublicSnippetsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Pagination    *PaginationRequest     `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
-	OwnerId       *string                `protobuf:"bytes,2,opt,name=owner_id,json=ownerId,proto3,oneof" json:"owner_id,omitempty"`
+	PageNumber    *int32                 `protobuf:"varint,1,opt,name=page_number,json=pageNumber,proto3,oneof" json:"page_number,omitempty"`
+	PageSize      *int32                 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3,oneof" json:"page_size,omitempty"`
+	OwnerId       *string                `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3,oneof" json:"owner_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListPublicSnippetsRequest) Reset() {
 	*x = ListPublicSnippetsRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[9]
+	mi := &file_v1_snippet_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -578,7 +535,7 @@ func (x *ListPublicSnippetsRequest) String() string {
 func (*ListPublicSnippetsRequest) ProtoMessage() {}
 
 func (x *ListPublicSnippetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[9]
+	mi := &file_v1_snippet_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -591,14 +548,21 @@ func (x *ListPublicSnippetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPublicSnippetsRequest.ProtoReflect.Descriptor instead.
 func (*ListPublicSnippetsRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{9}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *ListPublicSnippetsRequest) GetPagination() *PaginationRequest {
-	if x != nil {
-		return x.Pagination
+func (x *ListPublicSnippetsRequest) GetPageNumber() int32 {
+	if x != nil && x.PageNumber != nil {
+		return *x.PageNumber
 	}
-	return nil
+	return 0
+}
+
+func (x *ListPublicSnippetsRequest) GetPageSize() int32 {
+	if x != nil && x.PageSize != nil {
+		return *x.PageSize
+	}
+	return 0
 }
 
 func (x *ListPublicSnippetsRequest) GetOwnerId() string {
@@ -618,7 +582,7 @@ type ListPublicSnippetsResponse struct {
 
 func (x *ListPublicSnippetsResponse) Reset() {
 	*x = ListPublicSnippetsResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[10]
+	mi := &file_v1_snippet_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +594,7 @@ func (x *ListPublicSnippetsResponse) String() string {
 func (*ListPublicSnippetsResponse) ProtoMessage() {}
 
 func (x *ListPublicSnippetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[10]
+	mi := &file_v1_snippet_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +607,7 @@ func (x *ListPublicSnippetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPublicSnippetsResponse.ProtoReflect.Descriptor instead.
 func (*ListPublicSnippetsResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{10}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListPublicSnippetsResponse) GetSnippets() []*Snippet {
@@ -674,7 +638,7 @@ type UpdateSnippetRequest struct {
 
 func (x *UpdateSnippetRequest) Reset() {
 	*x = UpdateSnippetRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[11]
+	mi := &file_v1_snippet_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -686,7 +650,7 @@ func (x *UpdateSnippetRequest) String() string {
 func (*UpdateSnippetRequest) ProtoMessage() {}
 
 func (x *UpdateSnippetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[11]
+	mi := &file_v1_snippet_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +663,7 @@ func (x *UpdateSnippetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSnippetRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSnippetRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{11}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateSnippetRequest) GetId() string {
@@ -753,7 +717,7 @@ type UpdateSnippetResponse struct {
 
 func (x *UpdateSnippetResponse) Reset() {
 	*x = UpdateSnippetResponse{}
-	mi := &file_v1_snippet_proto_msgTypes[12]
+	mi := &file_v1_snippet_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -765,7 +729,7 @@ func (x *UpdateSnippetResponse) String() string {
 func (*UpdateSnippetResponse) ProtoMessage() {}
 
 func (x *UpdateSnippetResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[12]
+	mi := &file_v1_snippet_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -778,7 +742,7 @@ func (x *UpdateSnippetResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSnippetResponse.ProtoReflect.Descriptor instead.
 func (*UpdateSnippetResponse) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{12}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateSnippetResponse) GetSnippet() *Snippet {
@@ -797,7 +761,7 @@ type DeleteSnippetRequest struct {
 
 func (x *DeleteSnippetRequest) Reset() {
 	*x = DeleteSnippetRequest{}
-	mi := &file_v1_snippet_proto_msgTypes[13]
+	mi := &file_v1_snippet_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -809,7 +773,7 @@ func (x *DeleteSnippetRequest) String() string {
 func (*DeleteSnippetRequest) ProtoMessage() {}
 
 func (x *DeleteSnippetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_v1_snippet_proto_msgTypes[13]
+	mi := &file_v1_snippet_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,7 +786,7 @@ func (x *DeleteSnippetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSnippetRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSnippetRequest) Descriptor() ([]byte, []int) {
-	return file_v1_snippet_proto_rawDescGZIP(), []int{13}
+	return file_v1_snippet_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteSnippetRequest) GetId() string {
@@ -851,11 +815,7 @@ const file_v1_snippet_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"Q\n" +
-	"\x11PaginationRequest\x12\x1f\n" +
-	"\vpage_number\x18\x01 \x01(\x05R\n" +
-	"pageNumber\x12\x1b\n" +
-	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\"\x96\x01\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x96\x01\n" +
 	"\x12PaginationResponse\x12!\n" +
 	"\fcurrent_page\x18\x01 \x01(\x05R\vcurrentPage\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1f\n" +
@@ -878,21 +838,27 @@ const file_v1_snippet_proto_rawDesc = "" +
 	"\x11GetSnippetRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"C\n" +
 	"\x12GetSnippetResponse\x12-\n" +
-	"\asnippet\x18\x01 \x01(\v2\x13.snippet.v1.SnippetR\asnippet\"V\n" +
-	"\x15ListMySnippetsRequest\x12=\n" +
+	"\asnippet\x18\x01 \x01(\v2\x13.snippet.v1.SnippetR\asnippet\"}\n" +
+	"\x15ListMySnippetsRequest\x12$\n" +
+	"\vpage_number\x18\x01 \x01(\x05H\x00R\n" +
+	"pageNumber\x88\x01\x01\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05H\x01R\bpageSize\x88\x01\x01B\x0e\n" +
+	"\f_page_numberB\f\n" +
 	"\n" +
-	"pagination\x18\x01 \x01(\v2\x1d.snippet.v1.PaginationRequestR\n" +
-	"pagination\"\x89\x01\n" +
+	"_page_size\"\x89\x01\n" +
 	"\x16ListMySnippetsResponse\x12/\n" +
 	"\bsnippets\x18\x01 \x03(\v2\x13.snippet.v1.SnippetR\bsnippets\x12>\n" +
 	"\n" +
 	"pagination\x18\x02 \x01(\v2\x1e.snippet.v1.PaginationResponseR\n" +
-	"pagination\"\x87\x01\n" +
-	"\x19ListPublicSnippetsRequest\x12=\n" +
+	"pagination\"\xae\x01\n" +
+	"\x19ListPublicSnippetsRequest\x12$\n" +
+	"\vpage_number\x18\x01 \x01(\x05H\x00R\n" +
+	"pageNumber\x88\x01\x01\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05H\x01R\bpageSize\x88\x01\x01\x12\x1e\n" +
+	"\bowner_id\x18\x03 \x01(\tH\x02R\aownerId\x88\x01\x01B\x0e\n" +
+	"\f_page_numberB\f\n" +
 	"\n" +
-	"pagination\x18\x01 \x01(\v2\x1d.snippet.v1.PaginationRequestR\n" +
-	"pagination\x12\x1e\n" +
-	"\bowner_id\x18\x02 \x01(\tH\x00R\aownerId\x88\x01\x01B\v\n" +
+	"_page_sizeB\v\n" +
 	"\t_owner_id\"\x8d\x01\n" +
 	"\x1aListPublicSnippetsResponse\x12/\n" +
 	"\bsnippets\x18\x01 \x03(\v2\x13.snippet.v1.SnippetR\bsnippets\x12>\n" +
@@ -938,53 +904,50 @@ func file_v1_snippet_proto_rawDescGZIP() []byte {
 	return file_v1_snippet_proto_rawDescData
 }
 
-var file_v1_snippet_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_v1_snippet_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_v1_snippet_proto_goTypes = []any{
 	(*Snippet)(nil),                    // 0: snippet.v1.Snippet
-	(*PaginationRequest)(nil),          // 1: snippet.v1.PaginationRequest
-	(*PaginationResponse)(nil),         // 2: snippet.v1.PaginationResponse
-	(*CreateSnippetRequest)(nil),       // 3: snippet.v1.CreateSnippetRequest
-	(*CreateSnippetResponse)(nil),      // 4: snippet.v1.CreateSnippetResponse
-	(*GetSnippetRequest)(nil),          // 5: snippet.v1.GetSnippetRequest
-	(*GetSnippetResponse)(nil),         // 6: snippet.v1.GetSnippetResponse
-	(*ListMySnippetsRequest)(nil),      // 7: snippet.v1.ListMySnippetsRequest
-	(*ListMySnippetsResponse)(nil),     // 8: snippet.v1.ListMySnippetsResponse
-	(*ListPublicSnippetsRequest)(nil),  // 9: snippet.v1.ListPublicSnippetsRequest
-	(*ListPublicSnippetsResponse)(nil), // 10: snippet.v1.ListPublicSnippetsResponse
-	(*UpdateSnippetRequest)(nil),       // 11: snippet.v1.UpdateSnippetRequest
-	(*UpdateSnippetResponse)(nil),      // 12: snippet.v1.UpdateSnippetResponse
-	(*DeleteSnippetRequest)(nil),       // 13: snippet.v1.DeleteSnippetRequest
-	(*timestamppb.Timestamp)(nil),      // 14: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),              // 15: google.protobuf.Empty
+	(*PaginationResponse)(nil),         // 1: snippet.v1.PaginationResponse
+	(*CreateSnippetRequest)(nil),       // 2: snippet.v1.CreateSnippetRequest
+	(*CreateSnippetResponse)(nil),      // 3: snippet.v1.CreateSnippetResponse
+	(*GetSnippetRequest)(nil),          // 4: snippet.v1.GetSnippetRequest
+	(*GetSnippetResponse)(nil),         // 5: snippet.v1.GetSnippetResponse
+	(*ListMySnippetsRequest)(nil),      // 6: snippet.v1.ListMySnippetsRequest
+	(*ListMySnippetsResponse)(nil),     // 7: snippet.v1.ListMySnippetsResponse
+	(*ListPublicSnippetsRequest)(nil),  // 8: snippet.v1.ListPublicSnippetsRequest
+	(*ListPublicSnippetsResponse)(nil), // 9: snippet.v1.ListPublicSnippetsResponse
+	(*UpdateSnippetRequest)(nil),       // 10: snippet.v1.UpdateSnippetRequest
+	(*UpdateSnippetResponse)(nil),      // 11: snippet.v1.UpdateSnippetResponse
+	(*DeleteSnippetRequest)(nil),       // 12: snippet.v1.DeleteSnippetRequest
+	(*timestamppb.Timestamp)(nil),      // 13: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),              // 14: google.protobuf.Empty
 }
 var file_v1_snippet_proto_depIdxs = []int32{
-	14, // 0: snippet.v1.Snippet.created_at:type_name -> google.protobuf.Timestamp
-	14, // 1: snippet.v1.Snippet.updated_at:type_name -> google.protobuf.Timestamp
+	13, // 0: snippet.v1.Snippet.created_at:type_name -> google.protobuf.Timestamp
+	13, // 1: snippet.v1.Snippet.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: snippet.v1.GetSnippetResponse.snippet:type_name -> snippet.v1.Snippet
-	1,  // 3: snippet.v1.ListMySnippetsRequest.pagination:type_name -> snippet.v1.PaginationRequest
-	0,  // 4: snippet.v1.ListMySnippetsResponse.snippets:type_name -> snippet.v1.Snippet
-	2,  // 5: snippet.v1.ListMySnippetsResponse.pagination:type_name -> snippet.v1.PaginationResponse
-	1,  // 6: snippet.v1.ListPublicSnippetsRequest.pagination:type_name -> snippet.v1.PaginationRequest
-	0,  // 7: snippet.v1.ListPublicSnippetsResponse.snippets:type_name -> snippet.v1.Snippet
-	2,  // 8: snippet.v1.ListPublicSnippetsResponse.pagination:type_name -> snippet.v1.PaginationResponse
-	0,  // 9: snippet.v1.UpdateSnippetResponse.snippet:type_name -> snippet.v1.Snippet
-	3,  // 10: snippet.v1.SnippetService.CreateSnippet:input_type -> snippet.v1.CreateSnippetRequest
-	5,  // 11: snippet.v1.SnippetService.GetSnippet:input_type -> snippet.v1.GetSnippetRequest
-	7,  // 12: snippet.v1.SnippetService.ListMySnippets:input_type -> snippet.v1.ListMySnippetsRequest
-	9,  // 13: snippet.v1.SnippetService.ListPublicSnippets:input_type -> snippet.v1.ListPublicSnippetsRequest
-	11, // 14: snippet.v1.SnippetService.UpdateSnippet:input_type -> snippet.v1.UpdateSnippetRequest
-	13, // 15: snippet.v1.SnippetService.DeleteSnippet:input_type -> snippet.v1.DeleteSnippetRequest
-	4,  // 16: snippet.v1.SnippetService.CreateSnippet:output_type -> snippet.v1.CreateSnippetResponse
-	6,  // 17: snippet.v1.SnippetService.GetSnippet:output_type -> snippet.v1.GetSnippetResponse
-	8,  // 18: snippet.v1.SnippetService.ListMySnippets:output_type -> snippet.v1.ListMySnippetsResponse
-	10, // 19: snippet.v1.SnippetService.ListPublicSnippets:output_type -> snippet.v1.ListPublicSnippetsResponse
-	12, // 20: snippet.v1.SnippetService.UpdateSnippet:output_type -> snippet.v1.UpdateSnippetResponse
-	15, // 21: snippet.v1.SnippetService.DeleteSnippet:output_type -> google.protobuf.Empty
-	16, // [16:22] is the sub-list for method output_type
-	10, // [10:16] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	0,  // 3: snippet.v1.ListMySnippetsResponse.snippets:type_name -> snippet.v1.Snippet
+	1,  // 4: snippet.v1.ListMySnippetsResponse.pagination:type_name -> snippet.v1.PaginationResponse
+	0,  // 5: snippet.v1.ListPublicSnippetsResponse.snippets:type_name -> snippet.v1.Snippet
+	1,  // 6: snippet.v1.ListPublicSnippetsResponse.pagination:type_name -> snippet.v1.PaginationResponse
+	0,  // 7: snippet.v1.UpdateSnippetResponse.snippet:type_name -> snippet.v1.Snippet
+	2,  // 8: snippet.v1.SnippetService.CreateSnippet:input_type -> snippet.v1.CreateSnippetRequest
+	4,  // 9: snippet.v1.SnippetService.GetSnippet:input_type -> snippet.v1.GetSnippetRequest
+	6,  // 10: snippet.v1.SnippetService.ListMySnippets:input_type -> snippet.v1.ListMySnippetsRequest
+	8,  // 11: snippet.v1.SnippetService.ListPublicSnippets:input_type -> snippet.v1.ListPublicSnippetsRequest
+	10, // 12: snippet.v1.SnippetService.UpdateSnippet:input_type -> snippet.v1.UpdateSnippetRequest
+	12, // 13: snippet.v1.SnippetService.DeleteSnippet:input_type -> snippet.v1.DeleteSnippetRequest
+	3,  // 14: snippet.v1.SnippetService.CreateSnippet:output_type -> snippet.v1.CreateSnippetResponse
+	5,  // 15: snippet.v1.SnippetService.GetSnippet:output_type -> snippet.v1.GetSnippetResponse
+	7,  // 16: snippet.v1.SnippetService.ListMySnippets:output_type -> snippet.v1.ListMySnippetsResponse
+	9,  // 17: snippet.v1.SnippetService.ListPublicSnippets:output_type -> snippet.v1.ListPublicSnippetsResponse
+	11, // 18: snippet.v1.SnippetService.UpdateSnippet:output_type -> snippet.v1.UpdateSnippetResponse
+	14, // 19: snippet.v1.SnippetService.DeleteSnippet:output_type -> google.protobuf.Empty
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_v1_snippet_proto_init() }
@@ -992,16 +955,17 @@ func file_v1_snippet_proto_init() {
 	if File_v1_snippet_proto != nil {
 		return
 	}
-	file_v1_snippet_proto_msgTypes[3].OneofWrappers = []any{}
-	file_v1_snippet_proto_msgTypes[9].OneofWrappers = []any{}
-	file_v1_snippet_proto_msgTypes[11].OneofWrappers = []any{}
+	file_v1_snippet_proto_msgTypes[2].OneofWrappers = []any{}
+	file_v1_snippet_proto_msgTypes[6].OneofWrappers = []any{}
+	file_v1_snippet_proto_msgTypes[8].OneofWrappers = []any{}
+	file_v1_snippet_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_v1_snippet_proto_rawDesc), len(file_v1_snippet_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

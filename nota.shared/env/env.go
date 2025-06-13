@@ -30,6 +30,8 @@ func LoadEnv(envs []string) error {
 			err = loadAuth()
 		case "gateway":
 			err = loadGateway()
+		case "snippet":
+			err = loadSnippet()
 		}
 		if err != nil {
 			return err
@@ -85,6 +87,14 @@ func GetGatewayHost() string {
 
 func GetGatewayPort() string {
 	return os.Getenv("GATEWAY_PORT")
+}
+
+func GetSnippetHost() string {
+	return os.Getenv("SNIPPET_HOST")
+}
+
+func GetSnippetPort() string {
+	return os.Getenv("SNIPPET_PORT")
 }
 
 func loadJwt() error {
@@ -143,6 +153,20 @@ func loadAuth() error {
 	authPort := os.Getenv("AUTH_PORT")
 	if authPort == "" {
 		return errors.New("AUTH_PORT is not set. See .env.example")
+	}
+
+	return nil
+}
+
+func loadSnippet() error {
+	snippetHost := os.Getenv("SNIPPET_HOST")
+	if snippetHost == "" {
+		return errors.New("SNIPPET_HOST is not set. See .env.example")
+	}
+
+	snippetPort := os.Getenv("SNIPPET_PORT")
+	if snippetPort == "" {
+		return errors.New("SNIPPET_PORT is not set. See .env.example")
 	}
 
 	return nil
