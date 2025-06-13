@@ -24,6 +24,10 @@ type gateway struct {
 	Gateway Gateway `yaml:"gateway"`
 }
 
+type snippet struct {
+	Snippet Snippet `yaml:"snippet"`
+}
+
 func LoadJwt() (*Jwt, error) {
 	cfg, err := readConfig()
 	if err != nil {
@@ -83,6 +87,21 @@ func LoadGateway() (*Gateway, error) {
 	}
 
 	return &gateway.Gateway, nil
+}
+
+func LoadSnippet() (*Snippet, error) {
+	cfg, err := readConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	snippet := &snippet{}
+	err = yaml.Unmarshal(cfg, &snippet)
+	if err != nil {
+		return nil, errors.New("failed to unmarshal config file")
+	}
+
+	return &snippet.Snippet, nil
 }
 
 func readConfig() ([]byte, error) {

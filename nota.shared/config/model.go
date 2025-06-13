@@ -21,3 +21,8 @@ type Gateway struct {
 	Env             []string `yaml:"env"`
 	ProtectedRoutes []string `yaml:"protected_routes"`
 }
+
+type Snippet struct {
+	Name string   `yaml:"name"`
+	Env  []string `yaml:"env"`
+}

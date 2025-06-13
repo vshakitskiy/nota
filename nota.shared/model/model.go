@@ -13,3 +13,8 @@ type Model struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
+
+type Pagination struct {
+	Page int `json:"page"`
+	Size int `json:"size"`
+}
