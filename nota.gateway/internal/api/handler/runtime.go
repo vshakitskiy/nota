@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -56,7 +57,11 @@ func ErrorHandler(
 	w.WriteHeader(statusCode)
 	w.Header().Set("Content-Type", "application/json")
 
-	if statusCode == http.StatusServiceUnavailable {
+	if s.Code() == codes.InvalidArgument {
+		json.NewEncoder(w).Encode(map[string]string{
+			"error": "invalid body request",
+		})
+	} else if statusCode == http.StatusServiceUnavailable {
 		json.NewEncoder(w).Encode(map[string]string{
 			"error": "service unavailable",
 		})

@@ -13,7 +13,16 @@ import (
 	"nota.auth/internal/service"
 	pb "nota.auth/pkg/pb/v1"
 	"nota.shared/jwt"
+	s "nota.shared/status"
 	"nota.shared/telemetry"
+)
+
+var (
+	emailRegex         = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	StatusInvalidEmail = status.Error(
+		codes.InvalidArgument,
+		"email is required and must be valid",
+	)
 )
 
 type AuthServiceHandler struct {
@@ -47,10 +56,7 @@ func (h *AuthServiceHandler) GetUser(
 		case errors.Is(err, repository.ErrUserNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
 		default:
-			return nil, status.Error(
-				codes.Internal,
-				"something went wrong, try again later",
-			)
+			return nil, s.StatusInternal
 		}
 	}
 
@@ -68,21 +74,15 @@ func (h *AuthServiceHandler) Login(
 	ctx, span := telemetry.StartSpan(ctx, "AuthHandler.Login")
 	defer span.End()
 
-	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if req.Email == "" || !emailRegex.MatchString(req.Email) || len(req.Email) > 254 {
 		telemetry.RecordError(span, errors.New("email is required and must be valid"))
-		return nil, status.Error(
-			codes.InvalidArgument,
-			"email is required and must be valid",
-		)
+		return nil, StatusInvalidEmail
 	}
 
 	if req.Password == "" || len(req.Password) < 8 || len(req.Password) > 20 {
-		telemetry.RecordError(span, errors.New("password is required and must be between 8 and 20 characters long"))
-		return nil, status.Error(
-			codes.InvalidArgument,
-			"password is required and must be between 8 and 20 characters long",
-		)
+		errMsg := "password is required and must be between 8 and 20 characters long"
+		telemetry.RecordError(span, errors.New(errMsg))
+		return nil, status.Error(codes.InvalidArgument, errMsg)
 	}
 
 	tokenPair, err := h.service.Auth.Login(ctx, req.Email, req.Password)
@@ -96,10 +96,7 @@ func (h *AuthServiceHandler) Login(
 		case errors.Is(err, repository.ErrUserNotFound):
 			return nil, status.Error(codes.NotFound, err.Error())
 		default:
-			return nil, status.Error(
-				codes.Internal,
-				"something went wrong, try again later",
-			)
+			return nil, s.StatusInternal
 		}
 	}
 
@@ -119,8 +116,9 @@ func (h *AuthServiceHandler) RefreshToken(
 	defer span.End()
 
 	if req.RefreshToken == "" {
-		telemetry.RecordError(span, errors.New("refresh token is required"))
-		return nil, status.Error(codes.InvalidArgument, "refresh token is required")
+		errMsg := "refresh token is required"
+		telemetry.RecordError(span, errors.New(errMsg))
+		return nil, status.Error(codes.InvalidArgument, errMsg)
 	}
 
 	accessToken, err := h.service.Auth.RefreshToken(ctx, req.RefreshToken)
@@ -134,10 +132,7 @@ func (h *AuthServiceHandler) RefreshToken(
 		case errors.Is(err, repository.ErrSessionNotFound):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		default:
-			return nil, status.Error(
-				codes.Internal,
-				"something went wrong, try again later",
-			)
+			return nil, s.StatusInternal
 		}
 	}
 
@@ -154,28 +149,20 @@ func (h *AuthServiceHandler) Register(
 	defer span.End()
 
 	if req.Username == "" || len(req.Username) < 3 || len(req.Username) > 20 {
-		telemetry.RecordError(span, errors.New("username is required and must be between 3 and 20 characters long"))
-		return nil, status.Error(
-			codes.InvalidArgument,
-			"username is required and must be between 3 and 20 characters long",
-		)
+		errMsg := "username is required and must be between 3 and 20 characters long"
+		telemetry.RecordError(span, errors.New(errMsg))
+		return nil, status.Error(codes.InvalidArgument, errMsg)
 	}
 
-	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if req.Email == "" || !emailRegex.MatchString(req.Email) || len(req.Email) > 254 {
 		telemetry.RecordError(span, errors.New("email is required and must be valid"))
-		return nil, status.Error(
-			codes.InvalidArgument,
-			"email is required and must be valid",
-		)
+		return nil, StatusInvalidEmail
 	}
 
 	if req.Password == "" || len(req.Password) < 8 || len(req.Password) > 20 {
-		telemetry.RecordError(span, errors.New("password is required and must be between 8 and 20 characters long"))
-		return nil, status.Error(
-			codes.InvalidArgument,
-			"password is required and must be between 8 and 20 characters long",
-		)
+		errMsg := "password is required and must be between 8 and 20 characters long"
+		telemetry.RecordError(span, errors.New(errMsg))
+		return nil, status.Error(codes.InvalidArgument, errMsg)
 	}
 
 	id, err := h.service.Auth.Register(ctx, req.Username, req.Email, req.Password)
@@ -188,10 +175,7 @@ func (h *AuthServiceHandler) Register(
 		case errors.Is(err, repository.ErrUserAlreadyExists):
 			return nil, status.Error(codes.AlreadyExists, err.Error())
 		default:
-			return nil, status.Error(
-				codes.Internal,
-				"something went wrong, try again later",
-			)
+			return nil, s.StatusInternal
 		}
 	}
 
@@ -218,10 +202,7 @@ func (h *AuthServiceHandler) Logout(
 		case errors.Is(err, jwt.ErrExpiredToken):
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		default:
-			return nil, status.Error(
-				codes.Internal,
-				"something went wrong, try again later",
-			)
+			return nil, s.StatusInternal
 		}
 	}
 
