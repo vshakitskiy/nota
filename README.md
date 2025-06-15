@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Project was renamed from `nota` to `kakitomeru` & moved to [Kakitomeru](https://github.com/kakitomeru/kakitomeru) organization and.
+> Project was renamed from `nota` to `kakitomeru` & moved to [Kakitomeru](https://github.com/kakitomeru/kakitomeru) organization.
 
 # Nota (Kakitomeru)
 
